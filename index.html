@@ -52,7 +52,10 @@
   .card.prog::before{background:var(--accent-prog);}
   .card.elec::before{background:var(--accent-elec);}
   .card.math::before{background:var(--accent-math);}
-  .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;cursor:pointer;}
+  .card-head-right{display:flex;align-items:center;gap:8px;}
+  .chevron{color:var(--muted);font-size:11px;transition:transform 0.25s ease;}
+  .card.collapsed .chevron{transform:rotate(-90deg);}
   .card-title{font-size:15px;font-weight:600;}
   .card-prof{font-size:11px;color:var(--muted);margin-bottom:12px;font-family:'Space Mono',monospace;}
   .card-date{font-family:'Space Mono',monospace;font-size:11px;padding:3px 8px;border-radius:4px;color:#0e0f14;font-weight:700;white-space:nowrap;}
@@ -61,7 +64,8 @@
   .prog .card-date{background:var(--accent-prog);}
   .elec .card-date{background:var(--accent-elec);}
   .math .card-date{background:var(--accent-math);}
-  .topic-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+  .topic-list{list-style:none;display:flex;flex-direction:column;gap:5px;overflow:hidden;max-height:2000px;opacity:1;transition:max-height 0.32s ease,opacity 0.2s ease,margin 0.2s ease;}
+  .card.collapsed .topic-list{max-height:0;opacity:0;margin:0;}
   .topic-item{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:6px 8px;border-radius:6px;transition:background 0.15s;}
   .topic-item:hover{background:var(--surface2);}
   .check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all 0.15s;}
@@ -101,7 +105,7 @@
   <div class="op-row">
     <div>
       <div class="section-title">Overall Revision Progress</div>
-      <div class="op-label">Click topics to mark them done — synced across your devices</div>
+      <div class="op-label">Tap a subject to expand · click topics to mark them done · synced across devices</div>
     </div>
     <div class="op-big" id="opPercent">0%</div>
   </div>
@@ -304,7 +308,7 @@ async function pullRemote(){if(!cloudEnabled)return;try{
 function getExamDate(d){const m={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};const[day,mon]=d.split(' ');return new Date(2026,m[mon],parseInt(day));}
 function updateCountdowns(){const now=new Date();const bar=document.getElementById('countdownBar');bar.innerHTML='';const colors={mat:'#f97316',mech:'#a78bfa',prog:'#34d399',elec:'#60a5fa',math:'#f472b6'};subjects.forEach(s=>{const exam=getExamDate(s.date);const diff=Math.ceil((exam-now)/(1000*60*60*24));const chip=document.createElement('div');chip.className='cd-chip';const short=s.id==='mat'?'Materials':s.id==='mech'?'Mechanics':s.id==='prog'?'Programming':s.id==='elec'?'Electrical':'Maths';chip.innerHTML='<div class="cd-dot" style="background:'+colors[s.cls]+'"></div><span class="cd-label">'+short+'</span><span class="cd-days" style="color:'+colors[s.cls]+'">'+(diff>0?diff+'d':'TODAY')+'</span>';bar.appendChild(chip);});}
 function updateOverall(){let t=0,d=0;subjects.forEach(s=>{t+=s.topics.length;d+=state[s.id].size;});const pct=t?Math.round(d/t*100):0;document.getElementById('opPercent').textContent=pct+'%';document.getElementById('opBar').style.width=pct+'%';}
-function buildCards(){const grid=document.getElementById('cardsGrid');grid.innerHTML='';subjects.forEach(s=>{const card=document.createElement('div');card.className='card '+s.cls;card.innerHTML='<div class="card-header"><div class="card-title">'+s.label+'</div><div class="card-date">'+s.date+'</div></div><div class="card-prof">'+s.prof+'</div><ul class="topic-list" id="topics-'+s.id+'"></ul><div class="progress-bar-wrap"><div class="progress-bar" id="pb-'+s.id+'" style="width:0%"></div></div><div class="progress-label" id="pl-'+s.id+'">0 / '+s.topics.length+' topics</div>';grid.appendChild(card);const list=document.getElementById('topics-'+s.id);s.topics.forEach((topic,i)=>{const li=document.createElement('li');li.className='topic-item';const checked=state[s.id].has(i);if(checked)li.classList.add('done');li.innerHTML='<div class="check-box" id="cb-'+s.id+'-'+i+'">'+(checked?'✓':'')+'</div><span class="topic-text">'+topic+'</span>';li.addEventListener('click',()=>toggle(s.id,i,li));list.appendChild(li);});updateCard(s.id);});}
+function buildCards(){const grid=document.getElementById('cardsGrid');grid.innerHTML='';subjects.forEach(s=>{const card=document.createElement('div');card.className='card collapsed '+s.cls;card.innerHTML='<div class="card-header"><div class="card-title">'+s.label+'</div><div class="card-head-right"><div class="card-date">'+s.date+'</div><span class="chevron">▾</span></div></div><div class="card-prof">'+s.prof+'</div><ul class="topic-list" id="topics-'+s.id+'"></ul><div class="progress-bar-wrap"><div class="progress-bar" id="pb-'+s.id+'" style="width:0%"></div></div><div class="progress-label" id="pl-'+s.id+'">0 / '+s.topics.length+' topics</div>';grid.appendChild(card);card.querySelector(".card-header").addEventListener("click",()=>card.classList.toggle("collapsed"));const list=document.getElementById('topics-'+s.id);s.topics.forEach((topic,i)=>{const li=document.createElement('li');li.className='topic-item';const checked=state[s.id].has(i);if(checked)li.classList.add('done');li.innerHTML='<div class="check-box" id="cb-'+s.id+'-'+i+'">'+(checked?'✓':'')+'</div><span class="topic-text">'+topic+'</span>';li.addEventListener('click',()=>toggle(s.id,i,li));list.appendChild(li);});updateCard(s.id);});}
 function toggle(sid,idx,li){if(state[sid].has(idx)){state[sid].delete(idx);li.classList.remove('done');document.getElementById('cb-'+sid+'-'+idx).textContent='';}else{state[sid].add(idx);li.classList.add('done');document.getElementById('cb-'+sid+'-'+idx).textContent='✓';}updateCard(sid);updateOverall();saveState();}
 function updateCard(sid){const s=subjects.find(x=>x.id===sid);const done=state[sid].size;const total=s.topics.length;const pct=total?Math.round(done/total*100):0;document.getElementById('pb-'+sid).style.width=pct+'%';document.getElementById('pl-'+sid).textContent=done+' / '+total+' topics';}
 document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset all topic progress?')){subjects.forEach(s=>{state[s.id]=new Set();});saveState();buildCards();updateOverall();}});
