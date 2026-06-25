@@ -3,316 +3,661 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IMS2 Study Guide — HHN SS2026</title>
+<title>IMS2 Study Planner — HHN SS2026</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
   :root{
     --bg:#0e0f14;--surface:#161820;--surface2:#1e2030;--border:#2a2d3e;
     --text:#e2e4f0;--muted:#6b7094;
     --accent-mat:#f97316;--accent-mech:#a78bfa;--accent-prog:#34d399;--accent-elec:#60a5fa;--accent-math:#f472b6;
+    --ok:#34d399;--warn:#fbbf24;--risk:#f87171;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:28px 24px;max-width:1100px;margin:0 auto;}
-  .header{margin-bottom:28px;}
-  .header-top{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
-  .title{font-size:24px;font-weight:700;letter-spacing:-0.5px;}
-  .subtitle{color:var(--muted);font-size:13px;font-family:'Space Mono',monospace;}
-  .countdown-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-  .cd-chip{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;background:var(--surface);border:1px solid var(--border);font-size:12px;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:24px 20px 60px;max-width:1180px;margin:0 auto;}
+  a{color:var(--accent-elec);}
+  .mono{font-family:'Space Mono',monospace;}
+  .header-top{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+  .title{font-size:23px;font-weight:700;letter-spacing:-0.5px;}
+  .subtitle{color:var(--muted);font-size:12px;font-family:'Space Mono',monospace;}
+  #syncStatus{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-left:auto;}
+  .countdown-bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px;}
+  .cd-chip{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:6px;background:var(--surface);border:1px solid var(--border);font-size:12px;}
   .cd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
   .cd-label{color:var(--muted);}
   .cd-days{font-weight:700;font-family:'Space Mono',monospace;font-size:13px;}
-  .overall-progress{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
-  .op-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-  .op-big{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;}
-  .section-title{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;}
-  .op-label{font-size:12px;color:var(--muted);}
-  .op-bar-wrap{background:var(--surface2);border-radius:6px;height:10px;overflow:hidden;}
-  .op-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent-mat) 0%,var(--accent-mech) 25%,var(--accent-prog) 50%,var(--accent-elec) 75%,var(--accent-math) 100%);transition:width 0.4s ease;}
-  .timeline-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
-  .timeline{display:flex;flex-direction:column;gap:0;}
-  .tl-row{display:grid;grid-template-columns:80px 1fr;gap:0;}
-  .tl-date-col{display:flex;flex-direction:column;align-items:center;}
-  .tl-date{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);padding-top:2px;white-space:nowrap;}
-  .tl-line{flex:1;width:2px;background:var(--border);margin:4px 0;min-height:16px;}
-  .tl-content{padding:2px 0 18px 12px;}
-  .tl-exam{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;border:1px solid;font-size:13px;font-weight:600;}
-  .tl-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
-  .tl-exam.mat{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);color:var(--accent-mat);}
-  .tl-exam.mech{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);color:var(--accent-mech);}
-  .tl-exam.prog{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:var(--accent-prog);}
-  .tl-exam.elec{background:rgba(96,165,250,0.1);border-color:rgba(96,165,250,0.3);color:var(--accent-elec);}
-  .tl-exam.math{background:rgba(244,114,182,0.1);border-color:rgba(244,114,182,0.3);color:var(--accent-math);}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
-  @media(max-width:640px){.grid{grid-template-columns:1fr;}.tips-grid{grid-template-columns:1fr;}}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-  .card.mat::before{background:var(--accent-mat);}
-  .card.mech::before{background:var(--accent-mech);}
-  .card.prog::before{background:var(--accent-prog);}
-  .card.elec::before{background:var(--accent-elec);}
-  .card.math::before{background:var(--accent-math);}
-  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;cursor:pointer;}
-  .card-head-right{display:flex;align-items:center;gap:8px;}
-  .chevron{color:var(--muted);font-size:11px;transition:transform 0.25s ease;}
+  /* nav */
+  .nav{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:0;}
+  .nav button{background:none;border:none;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;padding:9px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .nav button:hover{color:var(--text);}
+  .nav button.active{color:var(--text);border-bottom-color:var(--accent-elec);}
+  .view{display:none;}
+  .view.active{display:block;}
+  /* generic */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;position:relative;}
+  .section-title{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  @media(max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:1fr 1fr;}}
+  @media(max-width:480px){.grid2,.grid3,.grid4{grid-template-columns:1fr;}}
+  .muted{color:var(--muted);}
+  .small{font-size:12px;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;font-family:'Space Mono',monospace;}
+  .pill.ok{background:rgba(52,211,153,.12);color:var(--ok);}
+  .pill.warn{background:rgba(251,191,36,.12);color:var(--warn);}
+  .pill.risk{background:rgba(248,113,113,.14);color:var(--risk);}
+  .pill.done{background:var(--surface2);color:var(--muted);}
+  .bar-wrap{background:var(--surface2);border-radius:5px;height:8px;overflow:hidden;}
+  .bar{height:100%;border-radius:5px;transition:width .3s ease;}
+  input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:13px;border-radius:7px;padding:7px 9px;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent-elec);}
+  label.fld{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);}
+  button.btn{background:var(--accent-elec);color:#0b1020;border:none;font-family:inherit;font-weight:700;font-size:13px;padding:9px 16px;border-radius:8px;cursor:pointer;}
+  button.btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+  button.btn:hover{filter:brightness(1.08);}
+  .accent-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+  .mat{--ac:var(--accent-mat);} .mech{--ac:var(--accent-mech);} .prog{--ac:var(--accent-prog);} .elec{--ac:var(--accent-elec);} .math{--ac:var(--accent-math);}
+  .ac-text{color:var(--ac);} .ac-bg{background:var(--ac);}
+  /* hero / priority */
+  .hero{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;overflow:hidden;position:relative;}
+  .hero h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+  .hero .big{font-size:26px;font-weight:700;margin-bottom:4px;}
+  .hero .study{font-family:'Space Mono',monospace;font-size:15px;margin-bottom:14px;}
+  .reasons{list-style:none;display:flex;flex-direction:column;gap:6px;}
+  .reasons li{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text);}
+  .reasons li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0;}
+  /* plan items */
+  .plan-item{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:9px;background:var(--surface2);margin-bottom:8px;border-left:3px solid var(--ac);}
+  .plan-rank{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:var(--ac);width:20px;}
+  .plan-mid{flex:1;}
+  .plan-name{font-weight:600;font-size:14px;}
+  .plan-why{font-size:11px;color:var(--muted);margin-top:2px;}
+  .plan-min{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;white-space:nowrap;}
+  /* subject card */
+  .subj-head{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .subj-name{font-size:16px;font-weight:600;}
+  .subj-meta{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+  .chevron{color:var(--muted);font-size:11px;transition:transform .25s;}
   .card.collapsed .chevron{transform:rotate(-90deg);}
-  .card-title{font-size:15px;font-weight:600;}
-  .card-prof{font-size:11px;color:var(--muted);margin-bottom:12px;font-family:'Space Mono',monospace;}
-  .card-date{font-family:'Space Mono',monospace;font-size:11px;padding:3px 8px;border-radius:4px;color:#0e0f14;font-weight:700;white-space:nowrap;}
-  .mat .card-date{background:var(--accent-mat);}
-  .mech .card-date{background:var(--accent-mech);}
-  .prog .card-date{background:var(--accent-prog);}
-  .elec .card-date{background:var(--accent-elec);}
-  .math .card-date{background:var(--accent-math);}
-  .topic-list{list-style:none;display:flex;flex-direction:column;gap:5px;overflow:hidden;max-height:2000px;opacity:1;transition:max-height 0.32s ease,opacity 0.2s ease,margin 0.2s ease;}
-  .card.collapsed .topic-list{max-height:0;opacity:0;margin:0;}
-  .topic-item{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:6px 8px;border-radius:6px;transition:background 0.15s;}
-  .topic-item:hover{background:var(--surface2);}
-  .check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all 0.15s;}
-  .topic-item.done .check-box{color:white;}
-  .mat .topic-item.done .check-box{background:var(--accent-mat);border-color:var(--accent-mat);}
-  .mech .topic-item.done .check-box{background:var(--accent-mech);border-color:var(--accent-mech);}
-  .prog .topic-item.done .check-box{background:var(--accent-prog);border-color:var(--accent-prog);color:#0e0f14;}
-  .elec .topic-item.done .check-box{background:var(--accent-elec);border-color:var(--accent-elec);}
-  .math .topic-item.done .check-box{background:var(--accent-math);border-color:var(--accent-math);}
-  .topic-text{font-size:13px;line-height:1.3;transition:opacity 0.15s;}
-  .topic-item.done .topic-text{opacity:0.4;text-decoration:line-through;}
-  .progress-bar-wrap{margin-top:14px;background:var(--surface2);border-radius:4px;height:6px;overflow:hidden;}
-  .progress-bar{height:100%;border-radius:4px;transition:width 0.3s ease;}
-  .mat .progress-bar{background:var(--accent-mat);}
-  .mech .progress-bar{background:var(--accent-mech);}
-  .prog .progress-bar{background:var(--accent-prog);}
-  .elec .progress-bar{background:var(--accent-elec);}
-  .math .progress-bar{background:var(--accent-math);}
-  .progress-label{margin-top:5px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;text-align:right;}
-  .tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-  .tip-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
-  .tip-title{font-weight:600;font-size:12px;margin-bottom:6px;}
-  .tip-body{color:var(--muted);font-size:12px;line-height:1.6;}
-  .reset-btn{margin-top:16px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;padding:7px 12px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
-  .reset-btn:hover{color:var(--text);border-color:var(--muted);}
+  .subj-body{overflow:hidden;max-height:6000px;transition:max-height .35s ease,opacity .2s;opacity:1;margin-top:14px;}
+  .card.collapsed .subj-body{max-height:0;opacity:0;margin-top:0;}
+  .cfg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px;}
+  .topic-row{display:grid;grid-template-columns:1fr 130px 70px 64px 70px 26px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--border);font-size:13px;}
+  .topic-row .tname{line-height:1.25;}
+  .topic-row.done .tname{color:var(--muted);}
+  .topic-head{display:grid;grid-template-columns:1fr 130px 70px 64px 70px 26px;gap:8px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-bottom:4px;}
+  @media(max-width:680px){
+    .topic-row,.topic-head{grid-template-columns:1fr 120px;grid-auto-rows:auto;}
+    .topic-row .tnum{display:none;}.topic-head span:nth-child(n+3){display:none;}
+    .topic-row select,.topic-row .miniflds{grid-column:1/3;}
+  }
+  .miniflds{display:flex;gap:8px;}
+  .miniflds label{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+  .miniflds input{width:48px;padding:4px 6px;}
+  .xbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;}
+  .xbtn:hover{color:var(--risk);}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:15px;}
+  .stat .v{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;}
+  .stat .l{font-size:11px;color:var(--muted);margin-top:3px;}
+  .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+  @media(max-width:680px){.week-grid{grid-template-columns:repeat(2,1fr);}}
+  .day-col{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px;min-height:90px;}
+  .day-col.past{opacity:.45;}
+  .day-col.today{border-color:var(--accent-elec);}
+  .day-h{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:6px;display:flex;justify-content:space-between;}
+  .chip-s{font-size:11px;padding:4px 6px;border-radius:6px;margin-bottom:5px;border-left:3px solid var(--ac);background:var(--surface);}
+  .chip-s .m{font-family:'Space Mono',monospace;color:var(--muted);font-size:10px;}
+  .rec{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;border-radius:8px;background:var(--surface2);margin-bottom:7px;font-size:13px;}
+  .rec .ic{flex-shrink:0;}
+  .barbar{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:10px;}
+  .barbar .b{flex:1;background:var(--accent-elec);border-radius:4px 4px 0 0;min-height:2px;position:relative;}
+  .barbar .bl{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:9px;color:var(--muted);}
+  .sess-row{display:flex;gap:10px;align-items:center;font-size:12px;padding:7px 0;border-top:1px solid var(--border);}
+  .timerbox{font-family:'Space Mono',monospace;font-size:30px;font-weight:700;text-align:center;margin:8px 0;}
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="header-top">
-    <div class="title">IMS2 — Exam Season 2026</div>
-    <div class="subtitle">Hochschule Heilbronn · SS2026</div>
-  </div>
-  <div class="countdown-bar" id="countdownBar"></div>
+<div class="header-top">
+  <div class="title">IMS2 — Study Planner</div>
+  <div class="subtitle">Hochschule Heilbronn · SS2026</div>
+  <span id="syncStatus">● offline</span>
 </div>
-<div class="overall-progress">
-  <div class="op-row">
-    <div>
-      <div class="section-title">Overall Revision Progress</div>
-      <div class="op-label">Tap a subject to expand · click topics to mark them done · synced across devices</div>
-    </div>
-    <div class="op-big" id="opPercent">0%</div>
-  </div>
-  <div class="op-bar-wrap"><div class="op-bar" id="opBar" style="width:0%"></div></div>
-  <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
-    <button class="reset-btn" id="resetBtn">Reset progress</button>
-    <span id="syncStatus" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">● offline</span>
-  </div>
+<div class="countdown-bar" id="countdownBar"></div>
+
+<div class="nav" id="nav">
+  <button data-view="today" class="active">Today</button>
+  <button data-view="subjects">Subjects</button>
+  <button data-view="log">Log session</button>
+  <button data-view="dashboard">Dashboard</button>
+  <button data-view="plan">Plan</button>
 </div>
-<div class="timeline-section">
-  <div class="section-title" style="margin-bottom:14px">Exam Timeline</div>
-  <div class="timeline">
-    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">3 Jul</div><div class="tl-line"></div></div>
-      <div class="tl-content"><div class="tl-exam mat">📦 Materials</div><div class="tl-sub">Metals (Wettlaufer) · Plastics (Gleiter/Gramlich)</div></div></div>
-    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">13 Jul</div><div class="tl-line"></div></div>
-      <div class="tl-content"><div class="tl-exam mech">⚙️ Eng. Mechanics 2/3</div><div class="tl-sub">EM2 Elastostatics (von Tardy-Tuch) · EM3 Dynamics (Hufnagel)</div></div></div>
-    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">17 Jul</div><div class="tl-line"></div></div>
-      <div class="tl-content"><div class="tl-exam prog">💻 Programming 2</div><div class="tl-sub">C programming · Saraç Heinz</div></div></div>
-    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">22 Jul</div><div class="tl-line"></div></div>
-      <div class="tl-content"><div class="tl-exam elec">⚡ Electrical Engineering</div><div class="tl-sub">Fischer · Lab (capacitors, rectifiers, AC, op-amp)</div></div></div>
-    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">23 Jul</div></div>
-      <div class="tl-content"><div class="tl-exam math">∫ Mathematics 2</div><div class="tl-sub">Pargmann — back-to-back with Electrical ⚠️</div></div></div>
-  </div>
-</div>
-<div class="grid" id="cardsGrid"></div>
-<div class="tips-grid">
-  <div class="tip-card"><div class="tip-title">🔥 Materials — first up (3 Jul)</div>
-    <div class="tip-body">Two halves: <strong>Metals</strong> (Wettlaufer) — metallurgy, heat treatment, iron-carbon &amp; TTT diagrams, deformation, testing/failure. <strong>Plastics</strong> (Gleiter/Gramlich) — polymer types, viscoelasticity/creep, thermal analysis (DSC), thermosets &amp; elastomers, fibre-reinforced composites, rheology, and processing (injection moulding, extrusion). Practise reading the phase diagrams.</div></div>
-  <div class="tip-card"><div class="tip-title">⚙️ Mechanics = two separate modules</div>
-    <div class="tip-body">EM2 (von Tardy-Tuch) is elastostatics — stress/strain, Mohr's circle, bending, moment of inertia, deflection curves. EM3 (Hufnagel) is kinematics &amp; dynamics — instantaneous pole, impulse/momentum, energy methods. Different maths, study them as two exams.</div></div>
-  <div class="tip-card"><div class="tip-title">💻 Programming 2 is C, not Java</div>
-    <div class="tip-body">Recursion, pointers, strings, structs, and linked lists. malloc/free and pointer arithmetic trip people up — write and trace actual code. The chained-lists exercises (insert/delete/sort, single &amp; double) mirror likely exam tasks.</div></div>
-  <div class="tip-card"><div class="tip-title">⚡ Electrical — two halves + lab</div>
-    <div class="tip-body"><strong>EE2 core:</strong> AC circuits (phasors, complex impedance, R-L-C, series/parallel resonance), AC power (P/Q/S, cos φ, single &amp; three-phase) and magnetics (magnetic circuits, coupled coils, transformers). <strong>Circuit design:</strong> diodes/Zener, BJT vs MOSFET regions &amp; switching, op-amp configs and active (Sallen-Key) filters. Lab (capacitors, rectifiers, RLC resonance, op-amp) can show up in writing too.</div></div>
-  <div class="tip-card"><div class="tip-title">😬 Electrical → Maths back-to-back</div>
-    <div class="tip-body">22nd then 23rd is tight. Get Electrical solid early so the night between is a Maths 2 refresh, not first-time learning. You have SS23/SS24 Maths past papers with solutions — use them as mock exams.</div></div>
-  <div class="tip-card"><div class="tip-title">∫ Maths 2 — only 4 chapters</div>
-    <div class="tip-body">Differential equations (1st &amp; 2nd order, separation, exponential approach), Laplace transform, functions of several variables (partial derivatives, gradient, extrema, Hessian), multiple integrals (polar/spherical, area &amp; volume). Tight scope — master all four.</div></div>
-</div>
+
+<div class="view active" id="view-today"></div>
+<div class="view" id="view-subjects"></div>
+<div class="view" id="view-log"></div>
+<div class="view" id="view-dashboard"></div>
+<div class="view" id="view-plan"></div>
+
 <script>
-const subjects=[
- {id:'mat',label:'Materials',prof:'Wettlaufer (Metals) · Gleiter/Gramlich (Plastics)',date:'3 Jul',cls:'mat',topics:[
-   'Metals: classification, selection & atomic bonds',
-   'Metals: crystalline structure & lattice defects',
-   'Metals: alloy & microstructure formation, diffusion',
-   'Metals: phase transformations & phase diagrams',
-   'Metals: eutectic transformation',
-   'Metals: iron-carbon phase diagram (reading it)',
-   'Metals: heat treatment — TTT/TTA, steel treatment',
-   'Metals: precipitation hardening of aluminium',
-   'Metals: alloying elements & standardisation',
-   'Metals: deformation, slip planes, dislocations',
-   'Metals: hardening, recovery & recrystallisation',
-   'Metals: extraction & recycling (Fe, Al, Cu)',
-   'Metals: metallography & testing methods',
-   'Metals: failure — wear, fracture, fatigue, corrosion',
-   'Metals: non-metallic materials (ceramics, glass)',
-   'Plastics: classification & comparison with other materials',
-   'Plastics: chemical fundamentals & bonding types (covalent, van der Waals)',
-   'Plastics: manufacture & formation reactions (polymerisation, polyaddition, polycondensation)',
-   'Plastics: chain architecture (linear, branched, network; homo/co-polymers)',
-   'Plastics: morphology — amorphous vs semi-crystalline, spherulites',
-   'Plastics: degrees of cross-linking (thermoplast/thermoset/elastomer)',
-   'Plastics: mechanical properties & tensile stress-strain diagrams',
-   'Plastics: viscoelastic behaviour, creep & creep modulus',
-   'Plastics: impact resistance & temperature dependence',
-   'Plastics: thermal properties & analysis (DSC, glass transition, crystallinity)',
-   'Plastics: additives, fillers & plasticisers',
-   'Plastics: key thermoplastics (PE, PP, PVC, PMMA, PA, PET, PC, PTFE, ABS, POM, PBT, PLA)',
-   'Plastics: thermosets (epoxy, phenolic, UP, aminoplasts)',
-   'Plastics: elastomers & rubber — vulcanisation, NR vs synthetic, TPEs',
-   'Plastics: fibre-reinforced plastics (glass, carbon, aramid)',
-   'Plastics: behaviour in the melt — rheology, viscosity, shear rate',
-   'Plastics: processing methods (injection moulding, extrusion, films)',
-   'Plastics: joining methods & recycling',
-   'Plastics: bioplastics & bio-based plastics',
- ]},
- {id:'mech',label:'Engineering Mechanics 2/3',prof:'von Tardy-Tuch (EM2) · Hufnagel (EM3)',date:'13 Jul',cls:'mech',topics:[
-   'EM2: Stress & strain in rods (tension/compression)',
-   'EM2: Material properties (Rf, Rm, Young’s modulus)',
-   'EM2: Shear stress & strain, contraction',
-   'EM2: Planar stress & coordinate transformation',
-   'EM2: Principal stresses & equivalent stresses (Mohr)',
-   'EM2: Moment of inertia (area)',
-   'EM2: Deflection curve of beams',
-   'EM3: Vector operations & moment of a bound vector',
-   'EM3: Kinematics — Cartesian & polar coordinates',
-   'EM3: Translation, rotation & general planar motion',
-   'EM3: Instantaneous pole (construction & pole curves)',
-   'EM3: Impulse & angular momentum (spin)',
-   'EM3: Moments of inertia & Huygens-Steiner theorem',
-   'EM3: Work, energy principle & conservative forces',
- ]},
- {id:'prog',label:'Programming 2',prof:'Prof. Saraç Heinz',date:'17 Jul',cls:'prog',topics:[
-   'Recursion: factorial, power, Fibonacci',
-   'Recursion vs iteration & the call stack',
-   'Pointers: declaration, dereferencing, arithmetic',
-   'Pointers 2: pointers to pointers, pointers & arrays',
-   'Strings in C & string handling functions',
-   'Structs: defining, members, the -> operator',
-   'Arrays of structs & sorting records',
-   'Dynamic memory: malloc / free, NULL checks',
-   'Singly linked lists: insert, delete, traverse',
-   'Doubly linked lists: insert, delete, sort',
-   'enum, union & typedef',
-   'Tracing & debugging pointer-based code',
- ]},
- {id:'elec',label:'Electrical Engineering',prof:'Prof. Fischer',date:'22 Jul',cls:'elec',topics:[
-   'AC: Sinusoidal quantities — amplitude, ω, phase, RMS',
-   'AC: Phasor / vector diagrams',
-   'AC: Complex impedance — reactance of R, L, C (X_L, X_C)',
-   'AC: Networks — series, parallel & mixed R-L-C circuits',
-   'AC: Series resonant circuit (f_r, impedance at resonance)',
-   'AC: Parallel resonant circuit',
-   'AC: Power — active P, reactive Q, apparent S, power factor cos φ',
-   'AC: Single-phase AC power problems',
-   'AC: Three-phase systems & power (balanced + unbalanced loads)',
-   'Mag: Magnetic circuits — MMF (θ), flux (Φ), reluctance (R_m), air gaps',
-   'Mag: Equivalent magnetic circuit diagrams',
-   'Mag: Mutual induction / coupled coils (dot convention, ± polarity)',
-   'Mag: Transformers (leakage, main flux, copper losses)',
-   'Semi: Diode fundamentals (forward voltage, conducting/blocking, types)',
-   'Semi: Diode networks (idealized, equivalent circuits, node voltages)',
-   'Semi: Zener diodes (breakdown, voltage reference, series resistor sizing)',
-   'Semi: BJT — β, regions (cut-off/active/saturation), switching',
-   'Semi: MOSFET — enhancement-type symbols & pins, regions, switching',
-   'Semi: BJT vs MOSFET comparison (conceptual)',
-   'OpAmp: Inverting & non-inverting amplifiers (gain formulas)',
-   'OpAmp: Voltage follower, V-I converter (input/output impedance)',
-   'OpAmp: Gain in dB & cascaded amplifier stages',
-   'OpAmp: Active filters — low/high/band-pass, Sallen-Key, transfer fns, 1st/2nd order',
-   'Lab: Capacitors (charging, energy storage)',
-   'Lab: Rectifiers — half-wave, bridge (B2), three-phase, ripple, smoothing cap',
-   'Lab: AC voltage — RC/RL series, low-pass filter, RLC resonance',
-   'Lab: Op-amp — current source, Sallen-Key filter',
- ]},
- {id:'math',label:'Mathematics 2',prof:'Prof. Pargmann',date:'23 Jul',cls:'math',topics:[
-   'DE 1st order: separation of variables',
-   'DE 1st order: exponential approach',
-   'Homogeneous vs inhomogeneous solutions',
-   'Linear DE 2nd order with constant coefficients',
-   'Fitting integration constants (initial values)',
-   'Laplace transform: definition & standard table',
-   'Laplace properties & solving IVPs',
-   'Functions of several variables: domain & limits',
-   'Partial derivatives & total differential',
-   'Gradient & directional behaviour',
-   'Extreme value determination & Hessian matrix',
-   'Double integrals (Cartesian & polar)',
-   'Triple integrals (cylindrical & spherical)',
-   'Area & volume calculations',
- ]}
-];
 /* ============================================================
-   CLOUD SYNC  —  zero config.
-   Progress is stored by a Netlify serverless function (Netlify Blobs).
-   No keys, no SQL. When opened from a Netlify URL it syncs across
-   all your devices; opened as a plain local file it saves locally.
+   SEED DATA — your real subjects & topics (used on first run)
+   ============================================================ */
+const SEED=[
+ {id:'mat',name:'Materials',cls:'mat',prof:'Wettlaufer · Gleiter/Gramlich',exam:'2026-07-03',weekly:5,estHours:50,importance:4,credits:5,topics:[
+   'Metals: classification, selection & atomic bonds','Metals: crystalline structure & lattice defects','Metals: alloy & microstructure formation, diffusion','Metals: phase transformations & phase diagrams','Metals: eutectic transformation','Metals: iron-carbon phase diagram (reading it)','Metals: heat treatment — TTT/TTA, steel treatment','Metals: precipitation hardening of aluminium','Metals: alloying elements & standardisation','Metals: deformation, slip planes, dislocations','Metals: hardening, recovery & recrystallisation','Metals: extraction & recycling (Fe, Al, Cu)','Metals: metallography & testing methods','Metals: failure — wear, fracture, fatigue, corrosion','Metals: non-metallic materials (ceramics, glass)','Plastics: classification & comparison with other materials','Plastics: chemical fundamentals & bonding types','Plastics: manufacture & formation reactions','Plastics: chain architecture (linear, branched, network)','Plastics: morphology — amorphous vs semi-crystalline','Plastics: degrees of cross-linking','Plastics: mechanical properties & stress-strain','Plastics: viscoelastic behaviour, creep & creep modulus','Plastics: impact resistance & temperature dependence','Plastics: thermal analysis (DSC, glass transition)','Plastics: additives, fillers & plasticisers','Plastics: key thermoplastics (PE, PP, PVC, PMMA, PA…)','Plastics: thermosets (epoxy, phenolic, UP, aminoplasts)','Plastics: elastomers & rubber — vulcanisation, TPEs','Plastics: fibre-reinforced plastics (glass, carbon, aramid)','Plastics: rheology, viscosity, shear rate','Plastics: processing (injection moulding, extrusion, films)','Plastics: joining methods & recycling','Plastics: bioplastics & bio-based plastics']},
+ {id:'mech',name:'Eng. Mechanics 2/3',cls:'mech',prof:'von Tardy-Tuch · Hufnagel',exam:'2026-07-13',weekly:4,estHours:30,importance:3,credits:5,topics:[
+   'EM2: Stress & strain in rods (tension/compression)','EM2: Material properties (Rf, Rm, Young’s modulus)','EM2: Shear stress & strain, contraction','EM2: Planar stress & coordinate transformation','EM2: Principal & equivalent stresses (Mohr)','EM2: Moment of inertia (area)','EM2: Deflection curve of beams','EM3: Vector operations & moment of a bound vector','EM3: Kinematics — Cartesian & polar coordinates','EM3: Translation, rotation & general planar motion','EM3: Instantaneous pole (construction & pole curves)','EM3: Impulse & angular momentum (spin)','EM3: Moments of inertia & Huygens-Steiner','EM3: Work, energy principle & conservative forces']},
+ {id:'prog',name:'Programming 2 (C)',cls:'prog',prof:'Prof. Saraç Heinz',exam:'2026-07-17',weekly:4,estHours:24,importance:3,credits:5,topics:[
+   'Recursion: factorial, power, Fibonacci','Recursion vs iteration & the call stack','Pointers: declaration, dereferencing, arithmetic','Pointers 2: pointers to pointers, pointers & arrays','Strings in C & string handling functions','Structs: defining, members, the -> operator','Arrays of structs & sorting records','Dynamic memory: malloc / free, NULL checks','Singly linked lists: insert, delete, traverse','Doubly linked lists: insert, delete, sort','enum, union & typedef','Tracing & debugging pointer-based code']},
+ {id:'elec',name:'Electrical Engineering',cls:'elec',prof:'Prof. Fischer',exam:'2026-07-22',weekly:5,estHours:50,importance:4,credits:5,topics:[
+   'AC: Sinusoidal quantities — amplitude, ω, phase, RMS','AC: Phasor / vector diagrams','AC: Complex impedance — reactance of R, L, C','AC: Networks — series, parallel & mixed R-L-C','AC: Series resonant circuit (f_r, impedance)','AC: Parallel resonant circuit','AC: Power — active, reactive, apparent, cos φ','AC: Single-phase AC power problems','AC: Three-phase systems & power','Mag: Magnetic circuits — MMF, flux, reluctance, air gaps','Mag: Equivalent magnetic circuit diagrams','Mag: Mutual induction / coupled coils (dot convention)','Mag: Transformers (leakage, main flux, copper losses)','Semi: Diode fundamentals (forward voltage, blocking)','Semi: Diode networks (idealized, equivalent circuits)','Semi: Zener diodes (breakdown, voltage reference)','Semi: BJT — β, regions, switching','Semi: MOSFET — symbols, regions, switching','Semi: BJT vs MOSFET comparison','OpAmp: Inverting & non-inverting (gain formulas)','OpAmp: Voltage follower, V-I converter','OpAmp: Gain in dB & cascaded stages','OpAmp: Active filters — Sallen-Key, transfer fns','Lab: Capacitors (charging, energy storage)','Lab: Rectifiers — half-wave, bridge, three-phase, ripple','Lab: AC voltage — RC/RL, low-pass, RLC resonance','Lab: Op-amp — current source, Sallen-Key filter']},
+ {id:'math',name:'Mathematics 2',cls:'math',prof:'Prof. Pargmann',exam:'2026-07-23',weekly:4,estHours:30,importance:4,credits:5,topics:[
+   'DE 1st order: separation of variables','DE 1st order: exponential approach','Homogeneous vs inhomogeneous solutions','Linear DE 2nd order with constant coefficients','Fitting integration constants (initial values)','Laplace transform: definition & standard table','Laplace properties & solving IVPs','Functions of several variables: domain & limits','Partial derivatives & total differential','Gradient & directional behaviour','Extreme value determination & Hessian matrix','Double integrals (Cartesian & polar)','Triple integrals (cylindrical & spherical)','Area & volume calculations']}
+];
+
+/* ============================================================
+   CLOUD SYNC — Netlify Blobs function. Stores the whole app state.
    ============================================================ */
 const SYNC_URL='/.netlify/functions/progress';
-const POLL_MS=8000;                    // how often to pull remote changes
-// Sync only over http(s) (i.e. when hosted). file:// = local-only.
+const POLL_MS=8000;
 const cloudEnabled=location.protocol==='http:'||location.protocol==='https:';
+const KEY='ims2_app_v2';
 
-const state={};subjects.forEach(s=>{state[s.id]=new Set();});
-const STORAGE_KEY='ims2_progress_v1';
-let lastUpdatedAt=0;            // logical clock for last-write-wins
-let pushTimer=null,suppress=false;
+const STATUS=[
+  {k:'not_started',l:'Not started',w:0,c:'var(--muted)'},
+  {k:'learning',l:'Learning',w:.25,c:'var(--accent-elec)'},
+  {k:'practicing',l:'Practicing',w:.55,c:'var(--accent-math)'},
+  {k:'confident',l:'Confident',w:.8,c:'var(--accent-mech)'},
+  {k:'mastered',l:'Mastered',w:1,c:'var(--accent-prog)'}
+];
+const statusW=k=>(STATUS.find(s=>s.k===k)||STATUS[0]).w;
 
-function serialize(){const obj={};Object.keys(state).forEach(k=>obj[k]=[...state[k]]);return obj;}
-function apply(obj){Object.keys(state).forEach(k=>state[k]=new Set());if(obj)Object.keys(obj).forEach(k=>{if(state[k])state[k]=new Set(obj[k]);});}
+/* utils */
+const uid=()=>Math.random().toString(36).slice(2,9);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const pad=n=>String(n).padStart(2,'0');
+function todayISO(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function parseDate(iso){const[y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d);}
+function midnight(d){const x=new Date(d);x.setHours(0,0,0,0);return x;}
+function daysUntil(iso){return Math.ceil((parseDate(iso)-midnight(new Date()))/86400000);}
+function weekStart(d){const x=midnight(d||new Date());const off=(x.getDay()+6)%7;x.setDate(x.getDate()-off);return x;}
+function monthStart(d){d=d||new Date();return new Date(d.getFullYear(),d.getMonth(),1);}
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const round=(x,n=0)=>{const f=Math.pow(10,n);return Math.round(x*f)/f;}
 
-function saveLocal(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({data:serialize(),updatedAt:lastUpdatedAt}));}catch(e){}}
-function loadLocal(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const o=JSON.parse(raw);
-  // tolerate the old format {mat:[...],...}
-  if(o.data){apply(o.data);lastUpdatedAt=o.updatedAt||0;}else{apply(o);}}catch(e){}}
+/* ============================================================
+   STATE
+   ============================================================ */
+let state=null, currentView='today', timer={running:false,start:0,sub:'',topic:''};
 
-function setStatus(txt,color){const el=document.getElementById('syncStatus');if(el){el.textContent='● '+txt;el.style.color=color||'var(--muted)';}}
+function buildSeed(){
+  const subjects=SEED.map(s=>{
+    const per=Math.max(.5,round(s.estHours/s.topics.length,1));
+    return {id:s.id,name:s.name,cls:s.cls,prof:s.prof,exam:s.exam,weekly:s.weekly,estHours:s.estHours,importance:s.importance,credits:s.credits,
+      topics:s.topics.map(t=>({id:uid(),name:t,status:'not_started',confidence:3,difficulty:3,hoursRemaining:per}))};
+  });
+  return {version:2,planStart:todayISO(),settings:{dailyMinutes:180},subjects,sessions:[],updatedAt:Date.now()};
+}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function loadLocal(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.subjects)return o;}}catch(e){}return null;}
+function touch(){state.updatedAt=Date.now();saveLocal();schedulePush();render();}
 
-// Persist locally immediately, then push to the cloud (debounced).
-function saveState(){lastUpdatedAt=Date.now();saveLocal();schedulePush();}
-function schedulePush(){if(!cloudEnabled)return;clearTimeout(pushTimer);pushTimer=setTimeout(pushRemote,400);}
-
+/* sync */
+function setStatus(t,c){const el=document.getElementById('syncStatus');if(el){el.textContent='● '+t;el.style.color=c||'var(--muted)';}}
+let pushTimer=null;
+function schedulePush(){if(!cloudEnabled)return;clearTimeout(pushTimer);pushTimer=setTimeout(pushRemote,500);}
 async function pushRemote(){if(!cloudEnabled)return;try{
   setStatus('syncing…','var(--accent-elec)');
-  const res=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:serialize(),updated_at:lastUpdatedAt})});
-  if(!res.ok)throw new Error(res.status);
-  setStatus('synced','var(--accent-prog)');
-}catch(e){setStatus('offline (saved locally)','var(--accent-mat)');}}
-
+  const res=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:state,updated_at:state.updatedAt})});
+  if(!res.ok)throw 0;setStatus('synced','var(--ok)');
+}catch(e){setStatus('offline (saved locally)','var(--warn)');}}
 async function pullRemote(){if(!cloudEnabled)return;try{
-  const res=await fetch(SYNC_URL,{headers:{'Accept':'application/json'}});
-  if(!res.ok)throw new Error(res.status);
-  const r=await res.json();
-  const remoteAt=(r&&r.updated_at)||0;
-  if(remoteAt>lastUpdatedAt){apply(r.data);lastUpdatedAt=remoteAt;saveLocal();buildCards();updateOverall();}
-  else if(lastUpdatedAt>0&&remoteAt===0){pushRemote();} // empty store: seed from this device
-  setStatus('synced','var(--accent-prog)');
-}catch(e){setStatus('offline (saved locally)','var(--accent-mat)');}}
-function getExamDate(d){const m={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};const[day,mon]=d.split(' ');return new Date(2026,m[mon],parseInt(day));}
-function updateCountdowns(){const now=new Date();const bar=document.getElementById('countdownBar');bar.innerHTML='';const colors={mat:'#f97316',mech:'#a78bfa',prog:'#34d399',elec:'#60a5fa',math:'#f472b6'};subjects.forEach(s=>{const exam=getExamDate(s.date);const diff=Math.ceil((exam-now)/(1000*60*60*24));const chip=document.createElement('div');chip.className='cd-chip';const short=s.id==='mat'?'Materials':s.id==='mech'?'Mechanics':s.id==='prog'?'Programming':s.id==='elec'?'Electrical':'Maths';chip.innerHTML='<div class="cd-dot" style="background:'+colors[s.cls]+'"></div><span class="cd-label">'+short+'</span><span class="cd-days" style="color:'+colors[s.cls]+'">'+(diff>0?diff+'d':'TODAY')+'</span>';bar.appendChild(chip);});}
-function updateOverall(){let t=0,d=0;subjects.forEach(s=>{t+=s.topics.length;d+=state[s.id].size;});const pct=t?Math.round(d/t*100):0;document.getElementById('opPercent').textContent=pct+'%';document.getElementById('opBar').style.width=pct+'%';}
-function buildCards(){const grid=document.getElementById('cardsGrid');grid.innerHTML='';subjects.forEach(s=>{const card=document.createElement('div');card.className='card collapsed '+s.cls;card.innerHTML='<div class="card-header"><div class="card-title">'+s.label+'</div><div class="card-head-right"><div class="card-date">'+s.date+'</div><span class="chevron">▾</span></div></div><div class="card-prof">'+s.prof+'</div><ul class="topic-list" id="topics-'+s.id+'"></ul><div class="progress-bar-wrap"><div class="progress-bar" id="pb-'+s.id+'" style="width:0%"></div></div><div class="progress-label" id="pl-'+s.id+'">0 / '+s.topics.length+' topics</div>';grid.appendChild(card);card.querySelector(".card-header").addEventListener("click",()=>card.classList.toggle("collapsed"));const list=document.getElementById('topics-'+s.id);s.topics.forEach((topic,i)=>{const li=document.createElement('li');li.className='topic-item';const checked=state[s.id].has(i);if(checked)li.classList.add('done');li.innerHTML='<div class="check-box" id="cb-'+s.id+'-'+i+'">'+(checked?'✓':'')+'</div><span class="topic-text">'+topic+'</span>';li.addEventListener('click',()=>toggle(s.id,i,li));list.appendChild(li);});updateCard(s.id);});}
-function toggle(sid,idx,li){if(state[sid].has(idx)){state[sid].delete(idx);li.classList.remove('done');document.getElementById('cb-'+sid+'-'+idx).textContent='';}else{state[sid].add(idx);li.classList.add('done');document.getElementById('cb-'+sid+'-'+idx).textContent='✓';}updateCard(sid);updateOverall();saveState();}
-function updateCard(sid){const s=subjects.find(x=>x.id===sid);const done=state[sid].size;const total=s.topics.length;const pct=total?Math.round(done/total*100):0;document.getElementById('pb-'+sid).style.width=pct+'%';document.getElementById('pl-'+sid).textContent=done+' / '+total+' topics';}
-document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset all topic progress?')){subjects.forEach(s=>{state[s.id]=new Set();});saveState();buildCards();updateOverall();}});
-loadLocal();buildCards();updateCountdowns();updateOverall();
+  const res=await fetch(SYNC_URL,{headers:{'Accept':'application/json'}});if(!res.ok)throw 0;
+  const r=await res.json();const remoteAt=(r&&r.updated_at)||0;
+  if(r&&r.data&&r.data.subjects&&remoteAt>state.updatedAt){state=r.data;saveLocal();render();}
+  else if(state.updatedAt>0&&(!r||!r.data||!r.data.subjects)){pushRemote();}
+  setStatus('synced','var(--ok)');
+}catch(e){setStatus('offline (saved locally)','var(--warn)');}}
+
+/* ============================================================
+   METRICS + RECOMMENDATION ENGINE  (modular — swap for an LLM later)
+   Engine.subject(sub) returns all derived metrics for one subject.
+   Engine.* read ONLY from `state`; the UI reads ONLY from Engine.
+   ============================================================ */
+const W={urgency:.35,behind:.25,confidence:.15,difficulty:.10,stale:.10,importance:.05};
+const Engine={
+  hoursStudied(sub,since){return state.sessions.filter(s=>s.subjectId===sub.id&&(!since||parseDate(s.date)>=since)).reduce((a,s)=>a+s.durationMin/60,0);},
+  lastStudied(sub){const ds=state.sessions.filter(s=>s.subjectId===sub.id).map(s=>parseDate(s.date).getTime());return ds.length?new Date(Math.max(...ds)):null;},
+  progressFrac(sub){if(!sub.topics.length)return 0;return sub.topics.reduce((a,t)=>a+statusW(t.status),0)/sub.topics.length;},
+  avgConf(sub){if(!sub.topics.length)return 0;return sub.topics.reduce((a,t)=>a+(+t.confidence||0),0)/sub.topics.length;},
+  avgDiff(sub){if(!sub.topics.length)return 0;return sub.topics.reduce((a,t)=>a+(+t.difficulty||0),0)/sub.topics.length;},
+  idealFrac(sub){const st=parseDate(state.planStart),ex=parseDate(sub.exam),now=midnight(new Date());if(ex<=st)return daysUntil(sub.exam)<=0?1:0;return clamp((now-st)/(ex-st),0,1);},
+  subject(sub){
+    const days=daysUntil(sub.exam);
+    const prog=this.progressFrac(sub);
+    const ideal=this.idealFrac(sub);
+    const behind=clamp(ideal-prog,0,1);
+    const conf=this.avgConf(sub), diff=this.avgDiff(sub);
+    const hoursDone=this.hoursStudied(sub);
+    const last=this.lastStudied(sub);
+    const dsl=last?Math.floor((midnight(new Date())-midnight(last))/86400000):99;
+    // priority components 0..1
+    const cUrg=days<=0?1:clamp((45-days)/45,0,1);
+    const cBehind=behind;
+    const cConf=clamp((10-conf)/10,0,1);
+    const cDiff=clamp((diff-1)/4,0,1);
+    const cStale=clamp(dsl/7,0,1);
+    const cImp=clamp((sub.importance-1)/4,0,1);
+    const contrib={urgency:W.urgency*cUrg,behind:W.behind*cBehind,confidence:W.confidence*cConf,difficulty:W.difficulty*cDiff,stale:W.stale*cStale,importance:W.importance*cImp};
+    const raw=Object.values(contrib).reduce((a,b)=>a+b,0);
+    const score=days<0?0:round(raw*100,1);
+    const recHours=Math.max(0,Math.round(sub.estHours*(1-prog)));
+    const readiness=Math.round(100*(.45*prog + .30*(conf/10) + .25*clamp(hoursDone/sub.estHours,0,1)));
+    let risk='ok';
+    if(days<0)risk='done';
+    else{if(behind>.10||readiness<60)risk='warn';if(behind>.22||readiness<42||(days<=10&&prog<.55))risk='risk';}
+    const behindHours=Math.max(0,Math.round(ideal*sub.estHours-hoursDone));
+    // human reasons sorted by contribution
+    const rk=[
+      {k:'urgency',v:cUrg,t:days<=0?'Exam is today/overdue':`Exam is in ${days} days`},
+      {k:'behind',v:cBehind,t:`${Math.round(behind*100)}% behind your ideal pace`},
+      {k:'confidence',v:cConf,t:`Confidence is low (${conf.toFixed(1)}/10)`},
+      {k:'difficulty',v:cDiff,t:`Difficult material (${diff.toFixed(1)}/5)`},
+      {k:'stale',v:cStale,t:dsl>=99?'Not studied yet':`Not studied in ${dsl} day${dsl===1?'':'s'}`},
+      {k:'importance',v:cImp,t:'High-weight subject'}
+    ].map(r=>({...r,c:contrib[r.k]})).sort((a,b)=>b.c-a.c);
+    const reasons=rk.filter(r=>r.v>=.2).slice(0,4);
+    if(reasons.length<2)reasons.push(...rk.filter(r=>!reasons.includes(r)).slice(0,2-reasons.length));
+    return {sub,days,prog,ideal,behind,behindHours,conf,diff,hoursDone,dsl,score,recHours,readiness,risk,reasons,contrib};
+  },
+  all(){return state.subjects.map(s=>this.subject(s)).sort((a,b)=>b.score-a.score);},
+  active(){return this.all().filter(m=>m.days>=0);},
+  dailyPlan(){
+    const act=this.active();if(!act.length)return [];
+    const cap=state.settings.dailyMinutes;
+    const top=act.slice(0,Math.min(4,act.length));
+    const sw=top.map(m=>Math.pow(m.score,1.25));
+    const sum=sw.reduce((a,b)=>a+b,0)||1;
+    let items=top.map((m,i)=>{let mins=Math.round(cap*sw[i]/sum/15)*15;mins=clamp(mins,30,120);return {m,mins};});
+    // trim/pad to capacity
+    let tot=items.reduce((a,b)=>a+b.mins,0);
+    while(tot>cap&&items.length){const j=items.reduce((mi,it,idx,arr)=>it.mins<arr[mi].mins?idx:mi,0);items[j].mins-=15;tot-=15;if(items[j].mins<=15)items.splice(j,1),tot=items.reduce((a,b)=>a+b.mins,0);}
+    return items.filter(it=>it.mins>=15);
+  },
+  weeklyPlan(){
+    const act=this.active();const ws=weekStart();const cap=state.settings.dailyMinutes;
+    const days=[...Array(7)].map((_,i)=>{const d=new Date(ws);d.setDate(d.getDate()+i);return {date:d,iso:todayISO(d),load:0,items:[]};});
+    const todayMid=midnight(new Date());
+    const eligible=days.filter(d=>d.date>=todayMid);
+    const pool=eligible.length?eligible:[days[6]];
+    act.forEach(m=>{
+      const totMin=Math.round(m.sub.weekly*60);
+      const n=clamp(Math.round(totMin/75),1,5);
+      const chunk=Math.max(30,Math.round(totMin/n/15)*15);
+      for(let i=0;i<n;i++){
+        const slot=pool.filter(d=>d.load+chunk<=cap*1.34).sort((a,b)=>a.load-b.load)[0]||pool.sort((a,b)=>a.load-b.load)[0];
+        slot.load+=chunk;slot.items.push({sub:m.sub,mins:chunk});
+      }
+    });
+    return days;
+  },
+  recommendations(){
+    const out=[];const act=this.active();
+    act.forEach(m=>{
+      if(m.days<=8)out.push({ic:'⏰',tone:'risk',t:`${m.sub.name} exam is only ${m.days} day${m.days===1?'':'s'} away.`,score:100-m.days});
+      if(m.dsl>=5&&m.dsl<99)out.push({ic:'💤',tone:'warn',t:`${m.sub.name} has been ignored for ${m.dsl} days.`,score:40+m.dsl});
+      if(m.dsl>=99)out.push({ic:'🆕',tone:'warn',t:`You haven't logged any time on ${m.sub.name} yet.`,score:30});
+      if(m.behindHours>=4)out.push({ic:'📉',tone:'warn',t:`You're about ${m.behindHours}h behind on ${m.sub.name}.`,score:35+m.behindHours});
+      const todayMin=state.sessions.filter(s=>s.subjectId===m.sub.id&&s.date===todayISO()).reduce((a,s)=>a+s.durationMin,0);
+      if(todayMin>=180)out.push({ic:'🔄',tone:'ok',t:`You've studied ${m.sub.name} ${round(todayMin/60,1)}h today — switch subjects for better retention.`,score:20});
+    });
+    const totBehind=act.reduce((a,m)=>a+m.behindHours,0);
+    if(totBehind>=6)out.push({ic:'🧮',tone:'risk',t:`You're roughly ${totBehind}h behind your targets overall.`,score:90});
+    if(!out.length)out.push({ic:'✅',tone:'ok',t:'You\'re on track across the board. Keep the streak going.',score:1});
+    return out.sort((a,b)=>b.score-a.score).slice(0,6);
+  },
+  forecast(){
+    const act=this.active();
+    const wk=weekStart();
+    const last7=midnight(new Date());last7.setDate(last7.getDate()-7);
+    const currentPace=state.sessions.filter(s=>parseDate(s.date)>=last7).reduce((a,s)=>a+s.durationMin/60,0);
+    const requiredPace=act.reduce((a,m)=>a+m.recHours/Math.max(m.days/7,.3),0);
+    return {currentPace:round(currentPace,1),requiredPace:round(requiredPace,1),deficit:round(Math.max(0,requiredPace-currentPace),1)};
+  }
+};
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const accentHex={mat:'#f97316',mech:'#a78bfa',prog:'#34d399',elec:'#60a5fa',math:'#f472b6'};
+const riskLabel={ok:'🟢 On Track',warn:'🟡 Slightly Behind',risk:'🔴 High Risk',done:'✓ Exam done'};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function updateCountdowns(){
+  const bar=document.getElementById('countdownBar');bar.innerHTML='';
+  state.subjects.slice().sort((a,b)=>parseDate(a.exam)-parseDate(b.exam)).forEach(s=>{
+    const d=daysUntil(s.exam);const chip=document.createElement('div');chip.className='cd-chip';
+    chip.innerHTML=`<div class="cd-dot" style="background:${accentHex[s.cls]}"></div><span class="cd-label">${esc(s.name.split(' ')[0])}</span><span class="cd-days" style="color:${accentHex[s.cls]}">${d>0?d+'d':d===0?'TODAY':'done'}</span>`;
+    bar.appendChild(chip);
+  });
+}
+
+function render(){
+  updateCountdowns();
+  ({today:renderToday,subjects:renderSubjects,log:renderLog,dashboard:renderDashboard,plan:renderPlan})[currentView]();
+}
+
+function renderToday(){
+  const el=document.getElementById('view-today');
+  const act=Engine.active();
+  if(!act.length){el.innerHTML='<div class="card">All exams are done. 🎉</div>';return;}
+  const plan=Engine.dailyPlan();
+  const top=plan[0]||{m:act[0],mins:60};
+  const m=top.m;
+  let html=`<div class="hero ${m.sub.cls}">
+    <div class="accent-bar ac-bg"></div>
+    <h2>Your highest priority today</h2>
+    <div class="big ac-text">${esc(m.sub.name)}</div>
+    <div class="study">Study for <b>${top.mins} minutes</b> · <span class="pill ${m.risk}">${riskLabel[m.risk]}</span> · readiness ${m.readiness}% · priority ${m.score}</div>
+    <ul class="reasons">${m.reasons.map(r=>`<li>${esc(r.t)}</li>`).join('')}</ul>
+  </div>`;
+
+  html+=`<div class="card"><div class="section-title">Today's plan (${state.settings.dailyMinutes} min capacity)</div>`;
+  plan.forEach((it,i)=>{
+    html+=`<div class="plan-item ${it.m.sub.cls}"><div class="plan-rank">${i+1}</div>
+      <div class="plan-mid"><div class="plan-name">${esc(it.m.sub.name)}</div><div class="plan-why">${esc(it.m.reasons.slice(0,2).map(r=>r.t).join(' · '))}</div></div>
+      <div class="plan-min">${it.mins}m</div></div>`;
+  });
+  html+=`<div class="small muted" style="margin-top:8px">Allocations are weighted by priority score. Log sessions and this re-ranks automatically.</div></div>`;
+
+  const recs=Engine.recommendations();
+  html+=`<div class="card"><div class="section-title">Smart recommendations</div>`;
+  recs.forEach(r=>{html+=`<div class="rec"><span class="ic">${r.ic}</span><span>${esc(r.t)}</span></div>`;});
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+
+function renderSubjects(){
+  const el=document.getElementById('view-subjects');
+  const metrics={};Engine.all().forEach(m=>metrics[m.sub.id]=m);
+  let html='';
+  state.subjects.forEach(sub=>{
+    const m=metrics[sub.id];
+    const rankAll=Engine.all();const rank=rankAll.findIndex(x=>x.sub.id===sub.id)+1;
+    html+=`<div class="card collapsed ${sub.cls}" data-sid="${sub.id}">
+      <div class="accent-bar ac-bg"></div>
+      <div class="subj-head" data-toggle="${sub.id}">
+        <span class="subj-name">${esc(sub.name)}</span>
+        <div class="subj-meta">
+          <span class="pill ${m.risk}">${riskLabel[m.risk]}</span>
+          <span class="mono small muted">${m.days>=0?m.days+'d left':'done'}</span>
+          <span class="mono small ac-text">P#${rank} · ${m.score}</span>
+          <span class="mono small">${Math.round(m.prog*100)}%</span>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="bar-wrap" style="margin-top:10px"><div class="bar ac-bg" style="width:${Math.round(m.prog*100)}%"></div></div>
+      <div class="subj-body">
+        <div class="muted small" style="margin:10px 0 4px">${esc(sub.prof)}</div>
+        <div class="grid4" style="margin:10px 0">
+          <div class="stat"><div class="v ac-text">${m.readiness}%</div><div class="l">Est. readiness</div></div>
+          <div class="stat"><div class="v">${round(m.hoursDone,1)}h</div><div class="l">Hours studied</div></div>
+          <div class="stat"><div class="v">+${m.recHours}h</div><div class="l">Recommended left</div></div>
+          <div class="stat"><div class="v">${m.behindHours}h</div><div class="l">Behind pace</div></div>
+        </div>
+        <div class="cfg-grid">
+          <label class="fld">Exam date<input type="date" data-cfg="exam" value="${sub.exam}"></label>
+          <label class="fld">Weekly target (h)<input type="number" min="0" step="0.5" data-cfg="weekly" value="${sub.weekly}"></label>
+          <label class="fld">Est. total hours<input type="number" min="1" step="1" data-cfg="estHours" value="${sub.estHours}"></label>
+          <label class="fld">Importance (1–5)<input type="number" min="1" max="5" data-cfg="importance" value="${sub.importance}"></label>
+          <label class="fld">Credits<input type="number" min="0" data-cfg="credits" value="${sub.credits}"></label>
+        </div>
+        <div class="section-title" style="margin-top:6px">Topics (${sub.topics.length})</div>
+        <div class="topic-head"><span>Topic</span><span>Status</span><span>Conf 1–10</span><span>Diff 1–5</span><span>Hrs left</span><span></span></div>
+        <div class="topics">`;
+    sub.topics.forEach((t,i)=>{
+      const done=t.status==='mastered'||t.status==='confident';
+      html+=`<div class="topic-row ${done?'done':''}" data-tid="${t.id}">
+        <div class="tname"><span class="tnum mono muted">${i+1}.</span> ${esc(t.name)}</div>
+        <select data-tf="status">${STATUS.map(s=>`<option value="${s.k}" ${t.status===s.k?'selected':''}>${s.l}</option>`).join('')}</select>
+        <input type="number" min="1" max="10" data-tf="confidence" value="${t.confidence}">
+        <input type="number" min="1" max="5" data-tf="difficulty" value="${t.difficulty}">
+        <input type="number" min="0" step="0.5" data-tf="hoursRemaining" value="${t.hoursRemaining}">
+        <button class="xbtn" data-del="${t.id}" title="Delete topic">✕</button>
+      </div>`;
+    });
+    html+=`</div>
+        <div style="margin-top:10px;display:flex;gap:8px"><input type="text" placeholder="Add a topic…" data-addtopic style="flex:1"><button class="btn ghost" data-addbtn>Add</button></div>
+      </div></div>`;
+  });
+  html+=`<div style="margin-top:4px"><button class="btn ghost" id="addSubject">+ Add subject</button></div>`;
+  el.innerHTML=html;
+}
+
+function renderLog(){
+  const el=document.getElementById('view-log');
+  const subOpts=state.subjects.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  let html=`<div class="card">
+    <div class="section-title">Live timer</div>
+    <div class="row" style="align-items:flex-end">
+      <label class="fld" style="flex:1;min-width:160px">Subject<select id="tSub">${subOpts}</select></label>
+      <label class="fld" style="flex:1;min-width:160px">Topic<select id="tTopic"></select></label>
+    </div>
+    <div class="timerbox" id="timerDisplay">00:00</div>
+    <div class="row"><button class="btn" id="timerBtn">Start</button><button class="btn ghost" id="timerReset">Reset</button></div>
+    <div class="small muted" style="margin-top:8px">Stopping the timer pre-fills the manual form below so you can add focus &amp; confidence.</div>
+  </div>`;
+
+  html+=`<div class="card">
+    <div class="section-title">Log a study session</div>
+    <div class="cfg-grid">
+      <label class="fld">Subject<select id="mSub">${subOpts}</select></label>
+      <label class="fld">Topic<select id="mTopic"></select></label>
+      <label class="fld">Date<input type="date" id="mDate" value="${todayISO()}"></label>
+      <label class="fld">Duration (min)<input type="number" id="mDur" min="1" value="60"></label>
+      <label class="fld">Focus (1–5)<input type="number" id="mFocus" min="1" max="5" value="4"></label>
+      <label class="fld">Confidence before<input type="number" id="mCb" min="1" max="10" value="4"></label>
+      <label class="fld">Confidence after<input type="number" id="mCa" min="1" max="10" value="6"></label>
+    </div>
+    <label class="fld" style="margin-bottom:12px">Notes<textarea id="mNotes" rows="2" placeholder="What did you cover? What's still shaky?"></textarea></label>
+    <label class="fld" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:12px"><input type="checkbox" id="mBump" checked style="width:auto"> Update the topic's confidence &amp; nudge its status from this session</label>
+    <button class="btn" id="saveSession">Save session</button>
+  </div>`;
+
+  const recent=state.sessions.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,15);
+  html+=`<div class="card"><div class="section-title">Recent sessions (${state.sessions.length} total)</div>`;
+  if(!recent.length)html+=`<div class="muted small">No sessions logged yet.</div>`;
+  recent.forEach(s=>{
+    const sub=state.subjects.find(x=>x.id===s.subjectId);const tp=sub&&sub.topics.find(t=>t.id===s.topicId);
+    html+=`<div class="sess-row"><span class="mono muted">${s.date}</span><span style="flex:1">${esc(sub?sub.name:'?')}${tp?' · '+esc(tp.name):''}</span><span class="mono">${s.durationMin}m</span><span class="muted small">focus ${s.focus||'–'}</span><button class="xbtn" data-delsess="${s.id}">✕</button></div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+  wireLog();
+}
+
+function renderDashboard(){
+  const el=document.getElementById('view-dashboard');
+  const ws=weekStart(),ms=monthStart();
+  const sum=(since)=>state.sessions.filter(s=>!since||parseDate(s.date)>=since).reduce((a,s)=>a+s.durationMin,0);
+  const todayMin=state.sessions.filter(s=>s.date===todayISO()).reduce((a,s)=>a+s.durationMin,0);
+  // streak
+  let streak=0;for(let i=0;i<400;i++){const d=new Date();d.setDate(d.getDate()-i);const iso=todayISO(d);const has=state.sessions.some(s=>s.date===iso);if(has)streak++;else if(i>0)break;else if(!has&&i===0)continue;}
+  const allTopics=state.subjects.reduce((a,s)=>a+s.topics.length,0);
+  const mastered=state.subjects.reduce((a,s)=>a+s.topics.filter(t=>t.status==='mastered').length,0);
+  const confAll=(()=>{let n=0,t=0;state.subjects.forEach(s=>s.topics.forEach(tp=>{n++;t+=+tp.confidence||0;}));return n?round(t/n,1):0;})();
+  let html=`<div class="grid4">
+    <div class="stat"><div class="v">${round(todayMin/60,1)}h</div><div class="l">Studied today</div></div>
+    <div class="stat"><div class="v">${round(sum(ws)/60,1)}h</div><div class="l">This week</div></div>
+    <div class="stat"><div class="v">${round(sum(ms)/60,1)}h</div><div class="l">This month</div></div>
+    <div class="stat"><div class="v">${streak}🔥</div><div class="l">Day streak</div></div>
+  </div>`;
+  // last 14 days bar chart
+  const dayMin=[...Array(14)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-(13-i));const iso=todayISO(d);return {iso,d,min:state.sessions.filter(s=>s.date===iso).reduce((a,s)=>a+s.durationMin,0)};});
+  const maxMin=Math.max(60,...dayMin.map(x=>x.min));
+  html+=`<div class="card"><div class="section-title">Last 14 days</div><div class="barbar">`;
+  dayMin.forEach(x=>{html+=`<div class="b" style="height:${Math.round(x.min/maxMin*100)}%" title="${x.iso}: ${round(x.min/60,1)}h"><span class="bl">${x.d.getDate()}</span></div>`;});
+  html+=`</div><div style="height:18px"></div></div>`;
+  // per subject
+  html+=`<div class="card"><div class="section-title">Per subject</div>`;
+  Engine.all().forEach(m=>{
+    const goalPct=m.sub.weekly>0?clamp(Engine.hoursStudied(m.sub,ws)/m.sub.weekly*100,0,100):0;
+    html+=`<div style="margin-bottom:14px"><div class="row" style="justify-content:space-between"><span class="${m.sub.cls} ac-text" style="font-weight:600">${esc(m.sub.name)}</span><span class="mono small muted">${round(m.hoursDone,1)}h · ${Math.round(m.prog*100)}% done · conf ${m.conf.toFixed(1)}</span></div>
+      <div class="bar-wrap ${m.sub.cls}" style="margin-top:6px"><div class="bar ac-bg" style="width:${Math.round(m.prog*100)}%"></div></div>
+      <div class="small muted mono" style="margin-top:3px">Weekly goal: ${round(Engine.hoursStudied(m.sub,ws),1)} / ${m.sub.weekly}h (${Math.round(goalPct)}%)</div></div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="grid3">
+    <div class="stat"><div class="v">${mastered}/${allTopics}</div><div class="l">Topics mastered</div></div>
+    <div class="stat"><div class="v">${confAll}/10</div><div class="l">Avg confidence</div></div>
+    <div class="stat"><div class="v">${round(sum(null)/60,1)}h</div><div class="l">Total logged</div></div>
+  </div>`;
+  el.innerHTML=html;
+}
+
+function renderPlan(){
+  const el=document.getElementById('view-plan');
+  const f=Engine.forecast();
+  let fTone=f.deficit<=0?'ok':f.deficit<5?'warn':'risk';
+  let html=`<div class="card">
+    <div class="section-title">Workload forecast</div>
+    <div class="grid3">
+      <div class="stat"><div class="v">${f.currentPace}h</div><div class="l">Current pace / week</div></div>
+      <div class="stat"><div class="v">${f.requiredPace}h</div><div class="l">Required pace / week</div></div>
+      <div class="stat"><div class="v ${fTone==='ok'?'':''}" style="color:var(--${fTone})">${f.deficit>0?'+'+f.deficit+'h':'on track'}</div><div class="l">Extra hours needed</div></div>
+    </div>
+    <div class="rec" style="margin-top:12px"><span class="ic">${f.deficit>0?'⚠️':'✅'}</span><span>${f.deficit>0?`You need roughly <b>${f.deficit} more study hours each week</b> to finish everything before exams.`:'Your current pace is enough to cover the estimated workload before your exams.'}</span></div>
+  </div>`;
+
+  // settings
+  html+=`<div class="card"><div class="section-title">Planner settings</div>
+    <div class="cfg-grid">
+      <label class="fld">Daily capacity (min)<input type="number" id="setDaily" min="30" step="15" value="${state.settings.dailyMinutes}"></label>
+      <label class="fld">Plan start date<input type="date" id="setStart" value="${state.planStart}"></label>
+    </div>
+    <div class="small muted">“Plan start” is where the ideal-pace line begins, used for behind-schedule detection.</div>
+  </div>`;
+
+  // weekly planner
+  const wk=Engine.weeklyPlan();const todayIso=todayISO();
+  html+=`<div class="card"><div class="section-title">This week's plan</div><div class="week-grid">`;
+  wk.forEach(day=>{
+    const past=day.iso<todayIso;const isToday=day.iso===todayIso;
+    html+=`<div class="day-col ${past?'past':''} ${isToday?'today':''}"><div class="day-h"><span>${DOW[(day.date.getDay()+6)%7]} ${day.date.getDate()}</span><span>${day.load?round(day.load/60,1)+'h':''}</span></div>`;
+    day.items.forEach(it=>{html+=`<div class="chip-s ${it.sub.cls}"><div>${esc(it.sub.name.split(' ')[0])}</div><div class="m">${it.mins}m</div></div>`;});
+    html+=`</div>`;
+  });
+  html+=`</div><div class="small muted" style="margin-top:10px">Sessions are spread to avoid overloading any single day and skip days already past. Increase your weekly targets per subject to add more.</div></div>`;
+
+  // exam agenda + readiness
+  html+=`<div class="card"><div class="section-title">Exam readiness</div>`;
+  Engine.all().slice().sort((a,b)=>a.days-b.days).forEach(m=>{
+    html+=`<div class="plan-item ${m.sub.cls}"><div class="plan-mid">
+      <div class="plan-name">${esc(m.sub.name)} <span class="pill ${m.risk}" style="margin-left:6px">${riskLabel[m.risk]}</span></div>
+      <div class="plan-why">${m.days>=0?m.days+' days left':'done'} · ${Math.round(m.prog*100)}% syllabus · readiness ${m.readiness}% · +${m.recHours}h recommended</div>
+    </div><div class="plan-min ac-text">P#${Engine.all().findIndex(x=>x.sub.id===m.sub.id)+1}</div></div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+  document.getElementById('setDaily').addEventListener('change',e=>{state.settings.dailyMinutes=clamp(+e.target.value||180,30,720);touch();});
+  document.getElementById('setStart').addEventListener('change',e=>{state.planStart=e.target.value;touch();});
+}
+
+/* ============================================================
+   EVENT WIRING
+   ============================================================ */
+function fillTopics(selId,subId){const sub=state.subjects.find(s=>s.id===subId);const sel=document.getElementById(selId);if(!sel)return;sel.innerHTML='<option value="">— general —</option>'+(sub?sub.topics.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join(''):'');}
+
+function wireLog(){
+  fillTopics('tTopic',document.getElementById('tSub').value);
+  fillTopics('mTopic',document.getElementById('mSub').value);
+  document.getElementById('tSub').addEventListener('change',e=>{timer.sub=e.target.value;fillTopics('tTopic',e.target.value);});
+  document.getElementById('tTopic').addEventListener('change',e=>timer.topic=e.target.value);
+  document.getElementById('mSub').addEventListener('change',e=>fillTopics('mTopic',e.target.value));
+  document.getElementById('timerBtn').addEventListener('click',toggleTimer);
+  document.getElementById('timerReset').addEventListener('click',()=>{timer.running=false;timer.start=0;document.getElementById('timerBtn').textContent='Start';updateTimerDisplay();});
+  document.getElementById('saveSession').addEventListener('click',saveSessionFromForm);
+  document.querySelectorAll('[data-delsess]').forEach(b=>b.addEventListener('click',()=>{state.sessions=state.sessions.filter(s=>s.id!==b.dataset.delsess);touch();}));
+  updateTimerDisplay();
+}
+let timerInt=null;
+function toggleTimer(){
+  const btn=document.getElementById('timerBtn');
+  if(!timer.running){timer.running=true;timer.start=Date.now();timer.sub=document.getElementById('tSub').value;timer.topic=document.getElementById('tTopic').value;btn.textContent='Stop';timerInt=setInterval(updateTimerDisplay,1000);}
+  else{timer.running=false;clearInterval(timerInt);btn.textContent='Start';
+    const mins=Math.max(1,Math.round((Date.now()-timer.start)/60000));
+    // prefill manual form
+    document.getElementById('mSub').value=timer.sub;fillTopics('mTopic',timer.sub);document.getElementById('mTopic').value=timer.topic;
+    document.getElementById('mDur').value=mins;document.getElementById('mSub').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+function updateTimerDisplay(){const el=document.getElementById('timerDisplay');if(!el)return;const ms=timer.running?Date.now()-timer.start:0;const s=Math.floor(ms/1000);el.textContent=pad(Math.floor(s/60))+':'+pad(s%60);}
+
+function saveSessionFromForm(){
+  const subId=document.getElementById('mSub').value;
+  const topicId=document.getElementById('mTopic').value;
+  const dur=Math.max(1,+document.getElementById('mDur').value||0);
+  const sess={id:uid(),subjectId:subId,topicId:topicId||null,date:document.getElementById('mDate').value||todayISO(),durationMin:dur,focus:+document.getElementById('mFocus').value||null,confBefore:+document.getElementById('mCb').value||null,confAfter:+document.getElementById('mCa').value||null,notes:document.getElementById('mNotes').value.trim()};
+  state.sessions.push(sess);
+  if(document.getElementById('mBump').checked&&topicId){
+    const sub=state.subjects.find(s=>s.id===subId);const t=sub&&sub.topics.find(x=>x.id===topicId);
+    if(t){if(sess.confAfter)t.confidence=sess.confAfter;
+      const order=['not_started','learning','practicing','confident','mastered'];
+      const cur=order.indexOf(t.status);let want=cur;
+      if(sess.confAfter>=9)want=4;else if(sess.confAfter>=7)want=Math.max(cur,3);else if(sess.confAfter>=5)want=Math.max(cur,2);else want=Math.max(cur,1);
+      t.status=order[want];
+      t.hoursRemaining=Math.max(0,round(t.hoursRemaining-dur/60,1));
+    }
+  }
+  touch();
+}
+
+function wireSubjects(){
+  document.querySelectorAll('[data-toggle]').forEach(h=>h.addEventListener('click',()=>{h.closest('.card').classList.toggle('collapsed');}));
+  document.querySelectorAll('.card[data-sid]').forEach(card=>{
+    const sid=card.dataset.sid;const sub=state.subjects.find(s=>s.id===sid);
+    card.querySelectorAll('[data-cfg]').forEach(inp=>inp.addEventListener('change',()=>{
+      const f=inp.dataset.cfg;sub[f]=f==='exam'?inp.value:(+inp.value||0);touch();}));
+    card.querySelectorAll('.topic-row').forEach(row=>{
+      const t=sub.topics.find(x=>x.id===row.dataset.tid);
+      row.querySelectorAll('[data-tf]').forEach(inp=>inp.addEventListener('change',()=>{
+        const f=inp.dataset.tf;t[f]=f==='status'?inp.value:(+inp.value||0);touch();}));
+      const del=row.querySelector('[data-del]');if(del)del.addEventListener('click',()=>{sub.topics=sub.topics.filter(x=>x.id!==t.id);touch();});
+    });
+    const addInp=card.querySelector('[data-addtopic]');const addBtn=card.querySelector('[data-addbtn]');
+    const doAdd=()=>{const v=addInp.value.trim();if(!v)return;sub.topics.push({id:uid(),name:v,status:'not_started',confidence:3,difficulty:3,hoursRemaining:1.5});touch();};
+    if(addBtn)addBtn.addEventListener('click',doAdd);
+    if(addInp)addInp.addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
+  });
+  const addS=document.getElementById('addSubject');
+  if(addS)addS.addEventListener('click',()=>{
+    const name=prompt('Subject name?');if(!name)return;
+    const exam=prompt('Exam date (YYYY-MM-DD)?',todayISO());
+    state.subjects.push({id:uid(),name,cls:['mat','mech','prog','elec','math'][state.subjects.length%5],prof:'',exam:exam||todayISO(),weekly:4,estHours:24,importance:3,credits:5,topics:[]});
+    touch();
+  });
+}
+
+/* re-wire after each subjects render (render() replaces innerHTML) */
+const _renderSubjects=renderSubjects;
+renderSubjects=function(){_renderSubjects();wireSubjects();};
+
+/* nav */
+document.getElementById('nav').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-view]');if(!b)return;
+  currentView=b.dataset.view;
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+currentView));
+  render();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+state=loadLocal()||buildSeed();
+saveLocal();
+render();
 if(cloudEnabled){setStatus('connecting…','var(--accent-elec)');pullRemote();setInterval(pullRemote,POLL_MS);}
 else{setStatus('local only (open the Netlify URL to sync)','var(--muted)');}
 </script>
