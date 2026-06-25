@@ -1,0 +1,7 @@
+# Netlify config — static site + one serverless function for sync.
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# No build step needed; Netlify installs dependencies from package.json
+# automatically and bundles the function.

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMS2 Study Guide — HHN SS2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+  :root{
+    --bg:#0e0f14;--surface:#161820;--surface2:#1e2030;--border:#2a2d3e;
+    --text:#e2e4f0;--muted:#6b7094;
+    --accent-mat:#f97316;--accent-mech:#a78bfa;--accent-prog:#34d399;--accent-elec:#60a5fa;--accent-math:#f472b6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:28px 24px;max-width:1100px;margin:0 auto;}
+  .header{margin-bottom:28px;}
+  .header-top{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
+  .title{font-size:24px;font-weight:700;letter-spacing:-0.5px;}
+  .subtitle{color:var(--muted);font-size:13px;font-family:'Space Mono',monospace;}
+  .countdown-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .cd-chip{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;background:var(--surface);border:1px solid var(--border);font-size:12px;}
+  .cd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .cd-label{color:var(--muted);}
+  .cd-days{font-weight:700;font-family:'Space Mono',monospace;font-size:13px;}
+  .overall-progress{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
+  .op-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .op-big{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;}
+  .section-title{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;}
+  .op-label{font-size:12px;color:var(--muted);}
+  .op-bar-wrap{background:var(--surface2);border-radius:6px;height:10px;overflow:hidden;}
+  .op-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent-mat) 0%,var(--accent-mech) 25%,var(--accent-prog) 50%,var(--accent-elec) 75%,var(--accent-math) 100%);transition:width 0.4s ease;}
+  .timeline-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
+  .timeline{display:flex;flex-direction:column;gap:0;}
+  .tl-row{display:grid;grid-template-columns:80px 1fr;gap:0;}
+  .tl-date-col{display:flex;flex-direction:column;align-items:center;}
+  .tl-date{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);padding-top:2px;white-space:nowrap;}
+  .tl-line{flex:1;width:2px;background:var(--border);margin:4px 0;min-height:16px;}
+  .tl-content{padding:2px 0 18px 12px;}
+  .tl-exam{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;border:1px solid;font-size:13px;font-weight:600;}
+  .tl-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+  .tl-exam.mat{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);color:var(--accent-mat);}
+  .tl-exam.mech{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);color:var(--accent-mech);}
+  .tl-exam.prog{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:var(--accent-prog);}
+  .tl-exam.elec{background:rgba(96,165,250,0.1);border-color:rgba(96,165,250,0.3);color:var(--accent-elec);}
+  .tl-exam.math{background:rgba(244,114,182,0.1);border-color:rgba(244,114,182,0.3);color:var(--accent-math);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  @media(max-width:640px){.grid{grid-template-columns:1fr;}.tips-grid{grid-template-columns:1fr;}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .card.mat::before{background:var(--accent-mat);}
+  .card.mech::before{background:var(--accent-mech);}
+  .card.prog::before{background:var(--accent-prog);}
+  .card.elec::before{background:var(--accent-elec);}
+  .card.math::before{background:var(--accent-math);}
+  .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+  .card-title{font-size:15px;font-weight:600;}
+  .card-prof{font-size:11px;color:var(--muted);margin-bottom:12px;font-family:'Space Mono',monospace;}
+  .card-date{font-family:'Space Mono',monospace;font-size:11px;padding:3px 8px;border-radius:4px;color:#0e0f14;font-weight:700;white-space:nowrap;}
+  .mat .card-date{background:var(--accent-mat);}
+  .mech .card-date{background:var(--accent-mech);}
+  .prog .card-date{background:var(--accent-prog);}
+  .elec .card-date{background:var(--accent-elec);}
+  .math .card-date{background:var(--accent-math);}
+  .topic-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+  .topic-item{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:6px 8px;border-radius:6px;transition:background 0.15s;}
+  .topic-item:hover{background:var(--surface2);}
+  .check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all 0.15s;}
+  .topic-item.done .check-box{color:white;}
+  .mat .topic-item.done .check-box{background:var(--accent-mat);border-color:var(--accent-mat);}
+  .mech .topic-item.done .check-box{background:var(--accent-mech);border-color:var(--accent-mech);}
+  .prog .topic-item.done .check-box{background:var(--accent-prog);border-color:var(--accent-prog);color:#0e0f14;}
+  .elec .topic-item.done .check-box{background:var(--accent-elec);border-color:var(--accent-elec);}
+  .math .topic-item.done .check-box{background:var(--accent-math);border-color:var(--accent-math);}
+  .topic-text{font-size:13px;line-height:1.3;transition:opacity 0.15s;}
+  .topic-item.done .topic-text{opacity:0.4;text-decoration:line-through;}
+  .progress-bar-wrap{margin-top:14px;background:var(--surface2);border-radius:4px;height:6px;overflow:hidden;}
+  .progress-bar{height:100%;border-radius:4px;transition:width 0.3s ease;}
+  .mat .progress-bar{background:var(--accent-mat);}
+  .mech .progress-bar{background:var(--accent-mech);}
+  .prog .progress-bar{background:var(--accent-prog);}
+  .elec .progress-bar{background:var(--accent-elec);}
+  .math .progress-bar{background:var(--accent-math);}
+  .progress-label{margin-top:5px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;text-align:right;}
+  .tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .tip-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
+  .tip-title{font-weight:600;font-size:12px;margin-bottom:6px;}
+  .tip-body{color:var(--muted);font-size:12px;line-height:1.6;}
+  .reset-btn{margin-top:16px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;padding:7px 12px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
+  .reset-btn:hover{color:var(--text);border-color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="title">IMS2 — Exam Season 2026</div>
+    <div class="subtitle">Hochschule Heilbronn · SS2026</div>
+  </div>
+  <div class="countdown-bar" id="countdownBar"></div>
+</div>
+<div class="overall-progress">
+  <div class="op-row">
+    <div>
+      <div class="section-title">Overall Revision Progress</div>
+      <div class="op-label">Click topics to mark them done — synced across your devices</div>
+    </div>
+    <div class="op-big" id="opPercent">0%</div>
+  </div>
+  <div class="op-bar-wrap"><div class="op-bar" id="opBar" style="width:0%"></div></div>
+  <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+    <button class="reset-btn" id="resetBtn">Reset progress</button>
+    <span id="syncStatus" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">● offline</span>
+  </div>
+</div>
+<div class="timeline-section">
+  <div class="section-title" style="margin-bottom:14px">Exam Timeline</div>
+  <div class="timeline">
+    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">3 Jul</div><div class="tl-line"></div></div>
+      <div class="tl-content"><div class="tl-exam mat">📦 Materials</div><div class="tl-sub">Metals (Wettlaufer) · Plastics (Gleiter/Gramlich)</div></div></div>
+    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">13 Jul</div><div class="tl-line"></div></div>
+      <div class="tl-content"><div class="tl-exam mech">⚙️ Eng. Mechanics 2/3</div><div class="tl-sub">EM2 Elastostatics (von Tardy-Tuch) · EM3 Dynamics (Hufnagel)</div></div></div>
+    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">17 Jul</div><div class="tl-line"></div></div>
+      <div class="tl-content"><div class="tl-exam prog">💻 Programming 2</div><div class="tl-sub">C programming · Saraç Heinz</div></div></div>
+    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">22 Jul</div><div class="tl-line"></div></div>
+      <div class="tl-content"><div class="tl-exam elec">⚡ Electrical Engineering</div><div class="tl-sub">Fischer · Lab (capacitors, rectifiers, AC, op-amp)</div></div></div>
+    <div class="tl-row"><div class="tl-date-col"><div class="tl-date">23 Jul</div></div>
+      <div class="tl-content"><div class="tl-exam math">∫ Mathematics 2</div><div class="tl-sub">Pargmann — back-to-back with Electrical ⚠️</div></div></div>
+  </div>
+</div>
+<div class="grid" id="cardsGrid"></div>
+<div class="tips-grid">
+  <div class="tip-card"><div class="tip-title">🔥 Materials — first up (3 Jul)</div>
+    <div class="tip-body">Two halves: <strong>Metals</strong> (Wettlaufer) — metallurgy, heat treatment, iron-carbon &amp; TTT diagrams, deformation, testing/failure. <strong>Plastics</strong> (Gleiter/Gramlich) — polymer types, viscoelasticity/creep, thermal analysis (DSC), thermosets &amp; elastomers, fibre-reinforced composites, rheology, and processing (injection moulding, extrusion). Practise reading the phase diagrams.</div></div>
+  <div class="tip-card"><div class="tip-title">⚙️ Mechanics = two separate modules</div>
+    <div class="tip-body">EM2 (von Tardy-Tuch) is elastostatics — stress/strain, Mohr's circle, bending, moment of inertia, deflection curves. EM3 (Hufnagel) is kinematics &amp; dynamics — instantaneous pole, impulse/momentum, energy methods. Different maths, study them as two exams.</div></div>
+  <div class="tip-card"><div class="tip-title">💻 Programming 2 is C, not Java</div>
+    <div class="tip-body">Recursion, pointers, strings, structs, and linked lists. malloc/free and pointer arithmetic trip people up — write and trace actual code. The chained-lists exercises (insert/delete/sort, single &amp; double) mirror likely exam tasks.</div></div>
+  <div class="tip-card"><div class="tip-title">⚡ Electrical — field theory heavy</div>
+    <div class="tip-body">From past papers: electrostatics, capacitors, magnetic fields, Lorentz force, magnetic circuits, self-induction, AC power (single &amp; three-phase), resonant circuits. Lab experiments (capacitors, rectifiers, AC, op-amp) can show up in writing too.</div></div>
+  <div class="tip-card"><div class="tip-title">😬 Electrical → Maths back-to-back</div>
+    <div class="tip-body">22nd then 23rd is tight. Get Electrical solid early so the night between is a Maths 2 refresh, not first-time learning. You have SS23/SS24 Maths past papers with solutions — use them as mock exams.</div></div>
+  <div class="tip-card"><div class="tip-title">∫ Maths 2 — only 4 chapters</div>
+    <div class="tip-body">Differential equations (1st &amp; 2nd order, separation, exponential approach), Laplace transform, functions of several variables (partial derivatives, gradient, extrema, Hessian), multiple integrals (polar/spherical, area &amp; volume). Tight scope — master all four.</div></div>
+</div>
+<script>
+const subjects=[
+ {id:'mat',label:'Materials',prof:'Wettlaufer (Metals) · Gleiter/Gramlich (Plastics)',date:'3 Jul',cls:'mat',topics:[
+   'Metals: classification, selection & atomic bonds',
+   'Metals: crystalline structure & lattice defects',
+   'Metals: alloy & microstructure formation, diffusion',
+   'Metals: phase transformations & phase diagrams',
+   'Metals: eutectic transformation',
+   'Metals: iron-carbon phase diagram (reading it)',
+   'Metals: heat treatment — TTT/TTA, steel treatment',
+   'Metals: precipitation hardening of aluminium',
+   'Metals: alloying elements & standardisation',
+   'Metals: deformation, slip planes, dislocations',
+   'Metals: hardening, recovery & recrystallisation',
+   'Metals: extraction & recycling (Fe, Al, Cu)',
+   'Metals: metallography & testing methods',
+   'Metals: failure — wear, fracture, fatigue, corrosion',
+   'Metals: non-metallic materials (ceramics, glass)',
+   'Plastics: classification & comparison with other materials',
+   'Plastics: chemical fundamentals & bonding types (covalent, van der Waals)',
+   'Plastics: manufacture & formation reactions (polymerisation, polyaddition, polycondensation)',
+   'Plastics: chain architecture (linear, branched, network; homo/co-polymers)',
+   'Plastics: morphology — amorphous vs semi-crystalline, spherulites',
+   'Plastics: degrees of cross-linking (thermoplast/thermoset/elastomer)',
+   'Plastics: mechanical properties & tensile stress-strain diagrams',
+   'Plastics: viscoelastic behaviour, creep & creep modulus',
+   'Plastics: impact resistance & temperature dependence',
+   'Plastics: thermal properties & analysis (DSC, glass transition, crystallinity)',
+   'Plastics: additives, fillers & plasticisers',
+   'Plastics: key thermoplastics (PE, PP, PVC, PMMA, PA, PET, PC, PTFE, ABS, POM, PBT, PLA)',
+   'Plastics: thermosets (epoxy, phenolic, UP, aminoplasts)',
+   'Plastics: elastomers & rubber — vulcanisation, NR vs synthetic, TPEs',
+   'Plastics: fibre-reinforced plastics (glass, carbon, aramid)',
+   'Plastics: behaviour in the melt — rheology, viscosity, shear rate',
+   'Plastics: processing methods (injection moulding, extrusion, films)',
+   'Plastics: joining methods & recycling',
+   'Plastics: bioplastics & bio-based plastics',
+ ]},
+ {id:'mech',label:'Engineering Mechanics 2/3',prof:'von Tardy-Tuch (EM2) · Hufnagel (EM3)',date:'13 Jul',cls:'mech',topics:[
+   'EM2: Stress & strain in rods (tension/compression)',
+   'EM2: Material properties (Rf, Rm, Young’s modulus)',
+   'EM2: Shear stress & strain, contraction',
+   'EM2: Planar stress & coordinate transformation',
+   'EM2: Principal stresses & equivalent stresses (Mohr)',
+   'EM2: Moment of inertia (area)',
+   'EM2: Deflection curve of beams',
+   'EM3: Vector operations & moment of a bound vector',
+   'EM3: Kinematics — Cartesian & polar coordinates',
+   'EM3: Translation, rotation & general planar motion',
+   'EM3: Instantaneous pole (construction & pole curves)',
+   'EM3: Impulse & angular momentum (spin)',
+   'EM3: Moments of inertia & Huygens-Steiner theorem',
+   'EM3: Work, energy principle & conservative forces',
+ ]},
+ {id:'prog',label:'Programming 2',prof:'Prof. Saraç Heinz',date:'17 Jul',cls:'prog',topics:[
+   'Recursion: factorial, power, Fibonacci',
+   'Recursion vs iteration & the call stack',
+   'Pointers: declaration, dereferencing, arithmetic',
+   'Pointers 2: pointers to pointers, pointers & arrays',
+   'Strings in C & string handling functions',
+   'Structs: defining, members, the -> operator',
+   'Arrays of structs & sorting records',
+   'Dynamic memory: malloc / free, NULL checks',
+   'Singly linked lists: insert, delete, traverse',
+   'Doubly linked lists: insert, delete, sort',
+   'enum, union & typedef',
+   'Tracing & debugging pointer-based code',
+ ]},
+ {id:'elec',label:'Electrical Engineering',prof:'Prof. Fischer',date:'22 Jul',cls:'elec',topics:[
+   'Resistor networks & circuit simplification',
+   'Equivalent linear sources (Thévenin/Norton)',
+   'Electrostatics & charging capacitors',
+   'Capacitor transient response / scope plots',
+   'Magnetic field & magnetic flux',
+   'Lorentz force',
+   'Magnetic potential & magnetic circuits',
+   'Self & mutual induction',
+   'AC: phasors, complex impedance & admittance',
+   'Series & parallel RLC resonant circuits',
+   'AC power (single-phase): true, apparent, reactive',
+   'AC power (three-phase) & power factor',
+   'Lab: capacitors, rectifiers, AC voltage, op-amp',
+ ]},
+ {id:'math',label:'Mathematics 2',prof:'Prof. Pargmann',date:'23 Jul',cls:'math',topics:[
+   'DE 1st order: separation of variables',
+   'DE 1st order: exponential approach',
+   'Homogeneous vs inhomogeneous solutions',
+   'Linear DE 2nd order with constant coefficients',
+   'Fitting integration constants (initial values)',
+   'Laplace transform: definition & standard table',
+   'Laplace properties & solving IVPs',
+   'Functions of several variables: domain & limits',
+   'Partial derivatives & total differential',
+   'Gradient & directional behaviour',
+   'Extreme value determination & Hessian matrix',
+   'Double integrals (Cartesian & polar)',
+   'Triple integrals (cylindrical & spherical)',
+   'Area & volume calculations',
+ ]}
+];
+/* ============================================================
+   CLOUD SYNC  —  zero config.
+   Progress is stored by a Netlify serverless function (Netlify Blobs).
+   No keys, no SQL. When opened from a Netlify URL it syncs across
+   all your devices; opened as a plain local file it saves locally.
+   ============================================================ */
+const SYNC_URL='/.netlify/functions/progress';
+const POLL_MS=8000;                    // how often to pull remote changes
+// Sync only over http(s) (i.e. when hosted). file:// = local-only.
+const cloudEnabled=location.protocol==='http:'||location.protocol==='https:';
+
+const state={};subjects.forEach(s=>{state[s.id]=new Set();});
+const STORAGE_KEY='ims2_progress_v1';
+let lastUpdatedAt=0;            // logical clock for last-write-wins
+let pushTimer=null,suppress=false;
+
+function serialize(){const obj={};Object.keys(state).forEach(k=>obj[k]=[...state[k]]);return obj;}
+function apply(obj){Object.keys(state).forEach(k=>state[k]=new Set());if(obj)Object.keys(obj).forEach(k=>{if(state[k])state[k]=new Set(obj[k]);});}
+
+function saveLocal(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({data:serialize(),updatedAt:lastUpdatedAt}));}catch(e){}}
+function loadLocal(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const o=JSON.parse(raw);
+  // tolerate the old format {mat:[...],...}
+  if(o.data){apply(o.data);lastUpdatedAt=o.updatedAt||0;}else{apply(o);}}catch(e){}}
+
+function setStatus(txt,color){const el=document.getElementById('syncStatus');if(el){el.textContent='● '+txt;el.style.color=color||'var(--muted)';}}
+
+// Persist locally immediately, then push to the cloud (debounced).
+function saveState(){lastUpdatedAt=Date.now();saveLocal();schedulePush();}
+function schedulePush(){if(!cloudEnabled)return;clearTimeout(pushTimer);pushTimer=setTimeout(pushRemote,400);}
+
+async function pushRemote(){if(!cloudEnabled)return;try{
+  setStatus('syncing…','var(--accent-elec)');
+  const res=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:serialize(),updated_at:lastUpdatedAt})});
+  if(!res.ok)throw new Error(res.status);
+  setStatus('synced','var(--accent-prog)');
+}catch(e){setStatus('offline (saved locally)','var(--accent-mat)');}}
+
+async function pullRemote(){if(!cloudEnabled)return;try{
+  const res=await fetch(SYNC_URL,{headers:{'Accept':'application/json'}});
+  if(!res.ok)throw new Error(res.status);
+  const r=await res.json();
+  const remoteAt=(r&&r.updated_at)||0;
+  if(remoteAt>lastUpdatedAt){apply(r.data);lastUpdatedAt=remoteAt;saveLocal();buildCards();updateOverall();}
+  else if(lastUpdatedAt>0&&remoteAt===0){pushRemote();} // empty store: seed from this device
+  setStatus('synced','var(--accent-prog)');
+}catch(e){setStatus('offline (saved locally)','var(--accent-mat)');}}
+function getExamDate(d){const m={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};const[day,mon]=d.split(' ');return new Date(2026,m[mon],parseInt(day));}
+function updateCountdowns(){const now=new Date();const bar=document.getElementById('countdownBar');bar.innerHTML='';const colors={mat:'#f97316',mech:'#a78bfa',prog:'#34d399',elec:'#60a5fa',math:'#f472b6'};subjects.forEach(s=>{const exam=getExamDate(s.date);const diff=Math.ceil((exam-now)/(1000*60*60*24));const chip=document.createElement('div');chip.className='cd-chip';const short=s.id==='mat'?'Materials':s.id==='mech'?'Mechanics':s.id==='prog'?'Programming':s.id==='elec'?'Electrical':'Maths';chip.innerHTML='<div class="cd-dot" style="background:'+colors[s.cls]+'"></div><span class="cd-label">'+short+'</span><span class="cd-days" style="color:'+colors[s.cls]+'">'+(diff>0?diff+'d':'TODAY')+'</span>';bar.appendChild(chip);});}
+function updateOverall(){let t=0,d=0;subjects.forEach(s=>{t+=s.topics.length;d+=state[s.id].size;});const pct=t?Math.round(d/t*100):0;document.getElementById('opPercent').textContent=pct+'%';document.getElementById('opBar').style.width=pct+'%';}
+function buildCards(){const grid=document.getElementById('cardsGrid');grid.innerHTML='';subjects.forEach(s=>{const card=document.createElement('div');card.className='card '+s.cls;card.innerHTML='<div class="card-header"><div class="card-title">'+s.label+'</div><div class="card-date">'+s.date+'</div></div><div class="card-prof">'+s.prof+'</div><ul class="topic-list" id="topics-'+s.id+'"></ul><div class="progress-bar-wrap"><div class="progress-bar" id="pb-'+s.id+'" style="width:0%"></div></div><div class="progress-label" id="pl-'+s.id+'">0 / '+s.topics.length+' topics</div>';grid.appendChild(card);const list=document.getElementById('topics-'+s.id);s.topics.forEach((topic,i)=>{const li=document.createElement('li');li.className='topic-item';const checked=state[s.id].has(i);if(checked)li.classList.add('done');li.innerHTML='<div class="check-box" id="cb-'+s.id+'-'+i+'">'+(checked?'✓':'')+'</div><span class="topic-text">'+topic+'</span>';li.addEventListener('click',()=>toggle(s.id,i,li));list.appendChild(li);});updateCard(s.id);});}
+function toggle(sid,idx,li){if(state[sid].has(idx)){state[sid].delete(idx);li.classList.remove('done');document.getElementById('cb-'+sid+'-'+idx).textContent='';}else{state[sid].add(idx);li.classList.add('done');document.getElementById('cb-'+sid+'-'+idx).textContent='✓';}updateCard(sid);updateOverall();saveState();}
+function updateCard(sid){const s=subjects.find(x=>x.id===sid);const done=state[sid].size;const total=s.topics.length;const pct=total?Math.round(done/total*100):0;document.getElementById('pb-'+sid).style.width=pct+'%';document.getElementById('pl-'+sid).textContent=done+' / '+total+' topics';}
+document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset all topic progress?')){subjects.forEach(s=>{state[s.id]=new Set();});saveState();buildCards();updateOverall();}});
+loadLocal();buildCards();updateCountdowns();updateOverall();
+if(cloudEnabled){setStatus('connecting…','var(--accent-elec)');pullRemote();setInterval(pullRemote,POLL_MS);}
+else{setStatus('local only (open the Netlify URL to sync)','var(--muted)');}
+</script>
+</body>
+</html>
