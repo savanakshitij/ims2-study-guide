@@ -1,77 +1,77 @@
-# IMS2 Study Guide — sync setup (phone ↔ laptop, anywhere)
+# IMS2 Study Guide — GitHub + Netlify (auto-deploy, syncs everywhere)
 
-The page works **right now** in local-only mode (progress saves on each device
-separately). To make checkboxes sync across phone + laptop over the internet,
-do the two parts below. ~10 minutes, all free.
+The plan: your code lives in a **GitHub** repo. **Netlify** is connected to that
+repo, so every `git push` rebuilds and redeploys the site automatically. Progress
+is stored by a small Netlify function (Netlify Blobs) — **no database, no keys,
+no SQL** to set up. Phone and laptop sync over the internet.
 
----
-
-## Part 1 — Free cloud store (Supabase)
-
-1. Go to <https://supabase.com> → **Start your project** → sign in with GitHub or email.
-2. **New project**. Give it any name, pick a region near you, set a database
-   password (you won't need it again). Wait ~2 min for it to provision.
-3. In the left sidebar open **SQL Editor** → **New query**, paste this, click **Run**:
-
-   ```sql
-   create table if not exists progress (
-     id text primary key,
-     data jsonb,
-     updated_at bigint
-   );
-   alter table progress enable row level security;
-   create policy "anon read/write" on progress
-     for all to anon using (true) with check (true);
-   ```
-
-   > This lets the page read and write progress with the public "anon" key.
-   > It's a personal study tracker, so open access to this one table is fine —
-   > the worst anyone could do is tick your checkboxes.
-
-4. Left sidebar → **Project Settings** (gear) → **API**. Copy two things:
-   - **Project URL** — looks like `https://abcdefgh.supabase.co`
-   - **anon public** key — a long string starting with `eyJ...`
-
-5. Open `index.html` and paste them into the CONFIG block near the bottom:
-
-   ```js
-   const SUPABASE_URL='https://abcdefgh.supabase.co';
-   const SUPABASE_ANON_KEY='eyJhbGciOi...';   // the anon public key
-   ```
-
-   Save. That's the sync wired up. The little dot under the progress bar will
-   read **● synced** once it connects.
+Everything's already built and committed locally. Three one-time steps:
 
 ---
 
-## Part 2 — Put the page on the internet (so the phone can open it)
+## Step 1 — Put the repo on GitHub
 
-Pick **one** host. All free, no card.
+GitHub CLI (`gh`) is installed. In a **normal terminal** (PowerShell), run:
 
-### Option A — Netlify Drop (easiest, no account needed to start)
-1. Go to <https://app.netlify.com/drop>.
-2. Drag the **`study-guide` folder** onto the page.
-3. It gives you a URL like `https://something.netlify.app` — open that on your phone.
-   (Create a free account when prompted if you want to keep the URL permanent.)
+```powershell
+cd "C:\Users\savan\Documents\claue\study-guide"
+gh auth login
+```
 
-### Option B — GitHub Pages
-1. Create a free GitHub account, make a new **public** repo.
-2. Upload `index.html` (and this folder's files) to it.
-3. Repo **Settings → Pages** → Source: `main` branch, `/root` → Save.
-4. Your site appears at `https://<user>.github.io/<repo>/` in a minute or two.
+For `gh auth login`, choose: **GitHub.com → HTTPS → Yes (authenticate Git) →
+Login with a web browser**. It shows a one-time code; press Enter, paste the code
+in the browser, done.
 
-> You only need to re-deploy if you change the page itself. Checkbox progress
-> lives in Supabase, so it syncs without re-uploading anything.
+Then create the repo and push in one command:
+
+```powershell
+gh repo create ims2-study-guide --public --source . --remote origin --push
+```
+
+(Use `--private` instead of `--public` if you'd rather keep it private — Netlify
+works with either.)
+
+---
+
+## Step 2 — Connect Netlify to the repo (this is the "auto" part)
+
+1. Go to <https://app.netlify.com> → sign up / log in (use your GitHub account —
+   one click).
+2. **Add new site → Import an existing project → Deploy with GitHub**.
+3. Authorize Netlify, then pick the **`ims2-study-guide`** repo.
+4. Build settings: leave them as detected (Netlify reads `netlify.toml` —
+   publish `.`, functions `netlify/functions`, no build command). Click **Deploy**.
+
+After ~1 minute you get a URL like `https://ims2-study-guide.netlify.app`.
+Open it on your laptop and your phone — ticking topics on one shows up on the
+other within a few seconds. The dot under the progress bar reads **● synced**.
+
+> From now on it's automatic: any change you push to GitHub redeploys the site.
+> No re-uploading, ever.
+
+---
+
+## Making changes later
+
+```powershell
+cd "C:\Users\savan\Documents\claue\study-guide"
+git add -A
+git commit -m "describe the change"
+git push
+```
+
+Netlify sees the push and redeploys in about a minute.
 
 ---
 
 ## How the sync behaves
-- Tick a topic on your laptop → it pushes to Supabase within ~½ second.
-- Your phone pulls every 8 seconds, so it catches up on its own (or instantly on reload).
-- No internet? It keeps saving locally and re-syncs when you're back online
+- Tick a topic → it POSTs to the Netlify function within ~½ second.
+- Other devices pull every 8 seconds (or instantly on reload) and catch up.
+- Offline? It keeps saving locally and re-syncs when you're back online
   (status dot shows **● offline (saved locally)**).
-- Last change wins if you somehow edit both at the exact same time.
+- Last change wins if you somehow edit both devices at the same instant.
 
-## Local testing on the laptop
-- Double-click `start-study-guide.bat`, or run `node server.mjs`, then open
-  <http://localhost:8080>.
+## Local preview (optional, no sync)
+Double-click `start-study-guide.bat` (or `node server.mjs`) and open
+<http://localhost:8080>. The plain local server can't run the sync function, so
+it just previews the page and saves locally — that's expected.
