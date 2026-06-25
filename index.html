@@ -134,8 +134,8 @@
     <div class="tip-body">EM2 (von Tardy-Tuch) is elastostatics — stress/strain, Mohr's circle, bending, moment of inertia, deflection curves. EM3 (Hufnagel) is kinematics &amp; dynamics — instantaneous pole, impulse/momentum, energy methods. Different maths, study them as two exams.</div></div>
   <div class="tip-card"><div class="tip-title">💻 Programming 2 is C, not Java</div>
     <div class="tip-body">Recursion, pointers, strings, structs, and linked lists. malloc/free and pointer arithmetic trip people up — write and trace actual code. The chained-lists exercises (insert/delete/sort, single &amp; double) mirror likely exam tasks.</div></div>
-  <div class="tip-card"><div class="tip-title">⚡ Electrical — field theory heavy</div>
-    <div class="tip-body">From past papers: electrostatics, capacitors, magnetic fields, Lorentz force, magnetic circuits, self-induction, AC power (single &amp; three-phase), resonant circuits. Lab experiments (capacitors, rectifiers, AC, op-amp) can show up in writing too.</div></div>
+  <div class="tip-card"><div class="tip-title">⚡ Electrical — two halves + lab</div>
+    <div class="tip-body"><strong>EE2 core:</strong> AC circuits (phasors, complex impedance, R-L-C, series/parallel resonance), AC power (P/Q/S, cos φ, single &amp; three-phase) and magnetics (magnetic circuits, coupled coils, transformers). <strong>Circuit design:</strong> diodes/Zener, BJT vs MOSFET regions &amp; switching, op-amp configs and active (Sallen-Key) filters. Lab (capacitors, rectifiers, RLC resonance, op-amp) can show up in writing too.</div></div>
   <div class="tip-card"><div class="tip-title">😬 Electrical → Maths back-to-back</div>
     <div class="tip-body">22nd then 23rd is tight. Get Electrical solid early so the night between is a Maths 2 refresh, not first-time learning. You have SS23/SS24 Maths past papers with solutions — use them as mock exams.</div></div>
   <div class="tip-card"><div class="tip-title">∫ Maths 2 — only 4 chapters</div>
@@ -210,19 +210,33 @@ const subjects=[
    'Tracing & debugging pointer-based code',
  ]},
  {id:'elec',label:'Electrical Engineering',prof:'Prof. Fischer',date:'22 Jul',cls:'elec',topics:[
-   'Resistor networks & circuit simplification',
-   'Equivalent linear sources (Thévenin/Norton)',
-   'Electrostatics & charging capacitors',
-   'Capacitor transient response / scope plots',
-   'Magnetic field & magnetic flux',
-   'Lorentz force',
-   'Magnetic potential & magnetic circuits',
-   'Self & mutual induction',
-   'AC: phasors, complex impedance & admittance',
-   'Series & parallel RLC resonant circuits',
-   'AC power (single-phase): true, apparent, reactive',
-   'AC power (three-phase) & power factor',
-   'Lab: capacitors, rectifiers, AC voltage, op-amp',
+   'AC: Sinusoidal quantities — amplitude, ω, phase, RMS',
+   'AC: Phasor / vector diagrams',
+   'AC: Complex impedance — reactance of R, L, C (X_L, X_C)',
+   'AC: Networks — series, parallel & mixed R-L-C circuits',
+   'AC: Series resonant circuit (f_r, impedance at resonance)',
+   'AC: Parallel resonant circuit',
+   'AC: Power — active P, reactive Q, apparent S, power factor cos φ',
+   'AC: Single-phase AC power problems',
+   'AC: Three-phase systems & power (balanced + unbalanced loads)',
+   'Mag: Magnetic circuits — MMF (θ), flux (Φ), reluctance (R_m), air gaps',
+   'Mag: Equivalent magnetic circuit diagrams',
+   'Mag: Mutual induction / coupled coils (dot convention, ± polarity)',
+   'Mag: Transformers (leakage, main flux, copper losses)',
+   'Semi: Diode fundamentals (forward voltage, conducting/blocking, types)',
+   'Semi: Diode networks (idealized, equivalent circuits, node voltages)',
+   'Semi: Zener diodes (breakdown, voltage reference, series resistor sizing)',
+   'Semi: BJT — β, regions (cut-off/active/saturation), switching',
+   'Semi: MOSFET — enhancement-type symbols & pins, regions, switching',
+   'Semi: BJT vs MOSFET comparison (conceptual)',
+   'OpAmp: Inverting & non-inverting amplifiers (gain formulas)',
+   'OpAmp: Voltage follower, V-I converter (input/output impedance)',
+   'OpAmp: Gain in dB & cascaded amplifier stages',
+   'OpAmp: Active filters — low/high/band-pass, Sallen-Key, transfer fns, 1st/2nd order',
+   'Lab: Capacitors (charging, energy storage)',
+   'Lab: Rectifiers — half-wave, bridge (B2), three-phase, ripple, smoothing cap',
+   'Lab: AC voltage — RC/RL series, low-pass filter, RLC resonance',
+   'Lab: Op-amp — current source, Sallen-Key filter',
  ]},
  {id:'math',label:'Mathematics 2',prof:'Prof. Pargmann',date:'23 Jul',cls:'math',topics:[
    'DE 1st order: separation of variables',
