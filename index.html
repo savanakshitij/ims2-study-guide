@@ -39,7 +39,10 @@
   .ovbar{background:linear-gradient(90deg,var(--accent-mat),var(--accent-mech),var(--accent-prog),var(--accent-elec),var(--accent-math));}
   /* subject */
   .subj-head{display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .subj-head-l{display:flex;flex-direction:column;gap:2px;}
   .subj-name{font-size:15px;font-weight:600;}
+  .subj-date{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+  .exam-line{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);background:var(--surface2);border-radius:8px;padding:8px 10px;margin-bottom:10px;}
   .subj-meta{margin-left:auto;display:flex;align-items:center;gap:9px;}
   .date-chip{font-family:'Space Mono',monospace;font-size:11px;padding:3px 8px;border-radius:4px;color:#0e0f14;font-weight:700;white-space:nowrap;background:var(--ac);}
   .pct-chip{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
@@ -87,15 +90,15 @@
 <script>
 /* ---- subjects & topics (simple checklist, like before) ---- */
 const SEED=[
- {id:'mat',name:'Materials',cls:'mat',prof:'Wettlaufer (Metals) · Gleiter/Gramlich (Plastics)',exam:'2026-07-03',topics:[
+ {id:'mat',name:'Materials',cls:'mat',prof:'Wettlaufer (Metals) · Gleiter/Gramlich (Plastics)',exam:'2026-07-03',time:'14:30–16:00',room:'A511, B001',topics:[
   'Metals: classification, selection & atomic bonds','Metals: crystalline structure & lattice defects','Metals: alloy & microstructure formation, diffusion','Metals: phase transformations & phase diagrams','Metals: eutectic transformation','Metals: iron-carbon phase diagram (reading it)','Metals: heat treatment — TTT/TTA, steel treatment','Metals: precipitation hardening of aluminium','Metals: alloying elements & standardisation','Metals: deformation, slip planes, dislocations','Metals: hardening, recovery & recrystallisation','Metals: extraction & recycling (Fe, Al, Cu)','Metals: metallography & testing methods','Metals: failure — wear, fracture, fatigue, corrosion','Metals: non-metallic materials (ceramics, glass)','Plastics: classification & comparison with other materials','Plastics: chemical fundamentals & bonding types (covalent, van der Waals)','Plastics: manufacture & formation reactions (polymerisation, polyaddition, polycondensation)','Plastics: chain architecture (linear, branched, network; homo/co-polymers)','Plastics: morphology — amorphous vs semi-crystalline, spherulites','Plastics: degrees of cross-linking (thermoplast/thermoset/elastomer)','Plastics: mechanical properties & tensile stress-strain diagrams','Plastics: viscoelastic behaviour, creep & creep modulus','Plastics: impact resistance & temperature dependence','Plastics: thermal properties & analysis (DSC, glass transition, crystallinity)','Plastics: additives, fillers & plasticisers','Plastics: key thermoplastics (PE, PP, PVC, PMMA, PA, PET, PC, PTFE, ABS, POM, PBT, PLA)','Plastics: thermosets (epoxy, phenolic, UP, aminoplasts)','Plastics: elastomers & rubber — vulcanisation, NR vs synthetic, TPEs','Plastics: fibre-reinforced plastics (glass, carbon, aramid)','Plastics: behaviour in the melt — rheology, viscosity, shear rate','Plastics: processing methods (injection moulding, extrusion, films)','Plastics: joining methods & recycling','Plastics: bioplastics & bio-based plastics']},
- {id:'mech',name:'Engineering Mechanics 2/3',cls:'mech',prof:'von Tardy-Tuch (EM2) · Hufnagel (EM3)',exam:'2026-07-13',topics:[
+ {id:'mech',name:'Engineering Mechanics 2/3',cls:'mech',prof:'von Tardy-Tuch (EM2) · Hufnagel (EM3)',exam:'2026-07-13',time:'11:00–13:00',room:'A412',topics:[
   'EM2: Stress & strain in rods (tension/compression)','EM2: Material properties (Rf, Rm, Young’s modulus)','EM2: Shear stress & strain, contraction','EM2: Planar stress & coordinate transformation','EM2: Principal stresses & equivalent stresses (Mohr)','EM2: Moment of inertia (area)','EM2: Deflection curve of beams','EM3: Vector operations & moment of a bound vector','EM3: Kinematics — Cartesian & polar coordinates','EM3: Translation, rotation & general planar motion','EM3: Instantaneous pole (construction & pole curves)','EM3: Impulse & angular momentum (spin)','EM3: Moments of inertia & Huygens-Steiner theorem','EM3: Work, energy principle & conservative forces']},
- {id:'prog',name:'Programming 2',cls:'prog',prof:'Prof. Saraç Heinz',exam:'2026-07-17',topics:[
+ {id:'prog',name:'Programming 2',cls:'prog',prof:'Prof. Saraç Heinz',exam:'2026-07-16',time:'10:45–12:45',room:'A408',topics:[
   'Recursion: factorial, power, Fibonacci','Recursion vs iteration & the call stack','Pointers: declaration, dereferencing, arithmetic','Pointers 2: pointers to pointers, pointers & arrays','Strings in C & string handling functions','Structs: defining, members, the -> operator','Arrays of structs & sorting records','Dynamic memory: malloc / free, NULL checks','Singly linked lists: insert, delete, traverse','Doubly linked lists: insert, delete, sort','enum, union & typedef','Tracing & debugging pointer-based code']},
- {id:'elec',name:'Electrical Engineering',cls:'elec',prof:'Prof. Fischer',exam:'2026-07-22',topics:[
+ {id:'elec',name:'Electrical Engineering',cls:'elec',prof:'Prof. Fischer',exam:'2026-07-22',time:'12:30–14:30',room:'G718 (Läpple-Hörsaal)',topics:[
   'AC: Sinusoidal quantities — amplitude, ω, phase, RMS','AC: Phasor / vector diagrams','AC: Complex impedance — reactance of R, L, C (X_L, X_C)','AC: Networks — series, parallel & mixed R-L-C circuits','AC: Series resonant circuit (f_r, impedance at resonance)','AC: Parallel resonant circuit','AC: Power — active P, reactive Q, apparent S, power factor cos φ','AC: Single-phase AC power problems','AC: Three-phase systems & power (balanced + unbalanced loads)','Mag: Magnetic circuits — MMF (θ), flux (Φ), reluctance (R_m), air gaps','Mag: Equivalent magnetic circuit diagrams','Mag: Mutual induction / coupled coils (dot convention, ± polarity)','Mag: Transformers (leakage, main flux, copper losses)','Semi: Diode fundamentals (forward voltage, conducting/blocking, types)','Semi: Diode networks (idealized, equivalent circuits, node voltages)','Semi: Zener diodes (breakdown, voltage reference, series resistor sizing)','Semi: BJT — β, regions (cut-off/active/saturation), switching','Semi: MOSFET — enhancement-type symbols & pins, regions, switching','Semi: BJT vs MOSFET comparison (conceptual)','OpAmp: Inverting & non-inverting amplifiers (gain formulas)','OpAmp: Voltage follower, V-I converter (input/output impedance)','OpAmp: Gain in dB & cascaded amplifier stages','OpAmp: Active filters — low/high/band-pass, Sallen-Key, transfer fns, 1st/2nd order','Lab: Capacitors (charging, energy storage)','Lab: Rectifiers — half-wave, bridge (B2), three-phase, ripple, smoothing cap','Lab: AC voltage — RC/RL series, low-pass filter, RLC resonance','Lab: Op-amp — current source, Sallen-Key filter']},
- {id:'math',name:'Mathematics 2',cls:'math',prof:'Prof. Pargmann',exam:'2026-07-23',topics:[
+ {id:'math',name:'Mathematics 2',cls:'math',prof:'Prof. Pargmann',exam:'2026-07-23',time:'11:00–13:30',room:'A312',topics:[
   'DE 1st order: separation of variables','DE 1st order: exponential approach','Homogeneous vs inhomogeneous solutions','Linear DE 2nd order with constant coefficients','Fitting integration constants (initial values)','Laplace transform: definition & standard table','Laplace properties & solving IVPs','Functions of several variables: domain & limits','Partial derivatives & total differential','Gradient & directional behaviour','Extreme value determination & Hessian matrix','Double integrals (Cartesian & polar)','Triple integrals (cylindrical & spherical)','Area & volume calculations']}
 ];
 
@@ -112,6 +115,10 @@ function todayISO(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()
 function parseDate(iso){const[y,m,dd]=iso.split('-').map(Number);return new Date(y,m-1,dd);}
 function midnight(d){const x=new Date(d);x.setHours(0,0,0,0);return x;}
 function daysUntil(iso){return Math.ceil((parseDate(iso)-midnight(new Date()))/86400000);}
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(iso,long){const d=parseDate(iso);return (long?DOWL:DOW)[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+(long?' '+d.getFullYear():'');}
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 /* ---- state: only progress, keyed by subject id ---- */
@@ -178,7 +185,7 @@ function render(){
     bar.insertAdjacentHTML('beforeend',`<div class="cd-chip"><div class="cd-dot" style="background:${accentHex[s.cls]}"></div><span class="cd-label">${esc(s.name.split(' ')[0])}</span><span class="cd-days" style="color:${accentHex[s.cls]}">${d>0?d+'d':d===0?'TODAY':'done'}</span></div>`);});
   // study next
   const nc=document.getElementById('nextCard');const nx=studyNext();
-  nc.innerHTML='<div class="section-title">Study next</div>'+(nx.length?nx.map((x,i)=>`<div class="next-item ${x.s.cls}"><span class="next-rank">${i+1}</span><div><div class="next-name">${esc(x.s.name)}</div><div class="next-why">${x.d}d to exam · ${Math.round(x.pf*100)}% done · conf ${x.conf}/10${x.perDay>0?` · ${x.perDay} papers/day`:''}${x.note?` · ${x.note}`:''}</div></div></div>`).join(''):'<div class="time-sub">All exams done 🎉</div>');
+  nc.innerHTML='<div class="section-title">Study next</div>'+(nx.length?nx.map((x,i)=>`<div class="next-item ${x.s.cls}"><span class="next-rank">${i+1}</span><div><div class="next-name">${esc(x.s.name)}</div><div class="next-why">${fmtDate(x.s.exam)} ${esc(x.s.time)} (${x.d}d) · ${Math.round(x.pf*100)}% done · conf ${x.conf}/10${x.perDay>0?` · ${x.perDay} papers/day`:''}${x.note?` · ${x.note}`:''}</div></div></div>`).join(''):'<div class="time-sub">All exams done 🎉</div>');
   // overall
   let tot=0,done=0;SEED.forEach(s=>{const u=units(s);tot+=u.total;done+=u.done;});
   const pct=tot?Math.round(done/tot*100):0;document.getElementById('ovPct').textContent=pct+'%';document.getElementById('ovBar').style.width=pct+'%';
@@ -191,11 +198,12 @@ function render(){
     let topics='';s.topics.forEach((t,i)=>{const dn=p.done.includes(i);topics+=`<li class="topic-item ${dn?'done':''}" data-i="${i}"><span class="check">${dn?'✓':''}</span><span class="topic-text">${esc(t)}</span></li>`;});
     card.innerHTML=`<div class="accent-bar"></div>
       <div class="subj-head" data-toggle>
-        <span class="subj-name">${esc(s.name)}</span>
+        <div class="subj-head-l"><span class="subj-name">${esc(s.name)}</span><div class="subj-date">${fmtDate(s.exam)} · ${esc(s.time)}</div></div>
         <div class="subj-meta"><span class="date-chip">${d>0?d+'d':d===0?'TODAY':'done'}</span><span class="pct-chip">${Math.round(pf*100)}%</span><span class="chevron">▾</span></div>
       </div>
       <div class="prog-bar-wrap"><div class="prog-bar" style="width:${Math.round(pf*100)}%"></div></div>
       <div class="subj-body">
+        <div class="exam-line">📅 ${fmtDate(s.exam,true)} · ${esc(s.time)} · ${esc(s.room)}</div>
         <div class="prof">${esc(s.prof)}</div>
         <div class="time-row">
           <span class="time-val">${fmtH(p.minutes)}</span>
