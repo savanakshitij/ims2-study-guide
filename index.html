@@ -56,7 +56,12 @@
   .tbtn.edit{margin-left:auto;}
   .conf-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
   .conf-row input[type=range]{flex:1;accent-color:var(--ac);}
-  .conf-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--ac);min-width:42px;text-align:right;}
+  .conf-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--ac);white-space:nowrap;text-align:right;}
+  .papers-box{background:var(--surface2);border-radius:9px;padding:10px 12px;margin-bottom:12px;}
+  .papers-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px;}
+  .papers-advice{font-family:'Space Mono',monospace;font-size:12px;color:var(--ac);}
+  .num{width:58px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',monospace;font-size:13px;border-radius:6px;padding:5px 7px;}
+  .num:focus{outline:none;border-color:var(--ac);}
   .topic-list{list-style:none;display:flex;flex-direction:column;gap:3px;}
   .topic-item{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:6px 8px;border-radius:6px;}
   .topic-item:hover{background:var(--surface2);}
@@ -112,7 +117,9 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 /* ---- state: only progress, keyed by subject id ---- */
 let state=null;const openSet=new Set();
 function fresh(){return {version:3,progress:{},updatedAt:Date.now()};}
-function prog(id){const p=state.progress[id]||(state.progress[id]={done:[],minutes:0,last:null,confidence:5});if(p.confidence==null)p.confidence=5;return p;}
+function prog(id){const p=state.progress[id]||(state.progress[id]={done:[],minutes:0,last:null,confidence:5,papersTotal:0,papersDone:0});if(p.confidence==null)p.confidence=5;if(p.papersTotal==null)p.papersTotal=0;if(p.papersDone==null)p.papersDone=0;return p;}
+function confLabel(c){return c<=2?'Just starting':c<=4?'Shaky':c<=6?'Getting there':c<=8?'Solid':'Exam-ready';}
+function papersAdvice(p,exam){const total=p.papersTotal||0,done=p.papersDone||0;if(total<=0)return 'Add how many papers you have.';const rem=Math.max(0,total-done);const dleft=daysUntil(exam);if(rem===0)return `All ${total} done ✓`;if(dleft<=0)return `${rem} left · exam day reached`;const perDay=Math.ceil(rem/dleft);return `${rem} left · do ${perDay}/day to finish in ${dleft} day${dleft===1?'':'s'}`;}
 function migrate(raw){
   if(!raw)return null;
   if(raw.version===3&&raw.progress)return raw;
@@ -195,7 +202,11 @@ function render(){
           <button class="tbtn" data-add="120">+2h</button>
           <button class="tbtn edit" data-edit>edit</button>
         </div>
-        <div class="conf-row"><span class="time-sub">Confidence</span><input type="range" min="1" max="10" value="${p.confidence}" data-conf><span class="conf-val">${p.confidence}/10</span></div>
+        <div class="papers-box">
+          <div class="papers-line"><span class="time-sub">Past papers</span><input type="number" class="num" min="0" data-ptotal value="${p.papersTotal}"><span class="time-sub">done</span><input type="number" class="num" min="0" data-pdone value="${p.papersDone}"><button class="tbtn" data-pinc>+1 done</button></div>
+          <div class="papers-advice">${esc(papersAdvice(p,s.exam))}</div>
+        </div>
+        <div class="conf-row"><span class="time-sub">Confidence</span><input type="range" min="1" max="10" value="${p.confidence}" data-conf><span class="conf-val">${p.confidence}/10 · ${confLabel(p.confidence)}</span></div>
         <ul class="topic-list">${topics}</ul>
       </div>`;
     wrap.appendChild(card);
@@ -213,7 +224,10 @@ function wireCards(){
       if(k>=0)p.done.splice(k,1);else p.done.push(i);touch();}));
     card.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{
       const p=prog(id);p.minutes=Math.max(0,p.minutes+ +b.dataset.add);p.last=todayISO();touch();}));
-    const cf=card.querySelector('[data-conf]');if(cf){cf.addEventListener('input',()=>{card.querySelector('.conf-val').textContent=cf.value+'/10';});cf.addEventListener('change',()=>{prog(id).confidence=+cf.value;touch();});}
+    const cf=card.querySelector('[data-conf]');if(cf){cf.addEventListener('input',()=>{card.querySelector('.conf-val').textContent=cf.value+'/10 · '+confLabel(+cf.value);});cf.addEventListener('change',()=>{prog(id).confidence=+cf.value;touch();});}
+    const pt=card.querySelector('[data-ptotal]');if(pt)pt.addEventListener('change',()=>{prog(id).papersTotal=Math.max(0,Math.round(+pt.value||0));touch();});
+    const pd=card.querySelector('[data-pdone]');if(pd)pd.addEventListener('change',()=>{prog(id).papersDone=Math.max(0,Math.round(+pd.value||0));touch();});
+    const pi=card.querySelector('[data-pinc]');if(pi)pi.addEventListener('click',()=>{const p=prog(id);p.papersDone=Math.min(p.papersTotal||0,(p.papersDone||0)+1);p.last=todayISO();touch();});
     const ed=card.querySelector('[data-edit]');if(ed)ed.addEventListener('click',()=>{
       const p=prog(id);const cur=Math.round(p.minutes/60*10)/10;
       const v=prompt('Total hours logged for this subject:',cur);if(v===null)return;
