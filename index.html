@@ -161,10 +161,11 @@ function fmtH(min){const h=min/60;return (Math.round(h*10)/10)+'h';}
 
 /* ---- study next ---- */
 function studyNext(){
-  return SEED.map(s=>{const d=daysUntil(s.exam);const pf=progressFrac(s);const ds=daysSince(s.id);const conf=prog(s.id).confidence;
-    const urgency=d<=0?1:Math.max(0,Math.min(1,(30-d)/30));const gap=1-pf;const stale=Math.min(1,(ds==null?7:ds)/7);const lowConf=(10-conf)/10;
-    const score=d<0?-1:100*(.4*urgency+.3*gap+.2*lowConf+.1*stale);
-    return {s,d,pf,ds,conf,score};}).filter(x=>x.score>=0).sort((a,b)=>b.score-a.score).slice(0,3);
+  return SEED.map(s=>{const d=daysUntil(s.exam);const pf=progressFrac(s);const ds=daysSince(s.id);const pr=prog(s.id);const conf=pr.confidence;
+    const rem=Math.max(0,(pr.papersTotal||0)-(pr.papersDone||0));const perDay=rem>0?(d>0?Math.ceil(rem/d):rem):0;
+    const urgency=d<=0?1:Math.max(0,Math.min(1,(30-d)/30));const gap=1-pf;const stale=Math.min(1,(ds==null?7:ds)/7);const lowConf=(10-conf)/10;const papersLoad=Math.min(1,perDay/4);
+    const score=d<0?-1:100*(.35*urgency+.25*gap+.2*lowConf+.15*papersLoad+.05*stale);
+    return {s,d,pf,ds,conf,perDay,score};}).filter(x=>x.score>=0).sort((a,b)=>b.score-a.score).slice(0,3);
 }
 
 /* ---- render ---- */
@@ -175,7 +176,7 @@ function render(){
     bar.insertAdjacentHTML('beforeend',`<div class="cd-chip"><div class="cd-dot" style="background:${accentHex[s.cls]}"></div><span class="cd-label">${esc(s.name.split(' ')[0])}</span><span class="cd-days" style="color:${accentHex[s.cls]}">${d>0?d+'d':d===0?'TODAY':'done'}</span></div>`);});
   // study next
   const nc=document.getElementById('nextCard');const nx=studyNext();
-  nc.innerHTML='<div class="section-title">Study next</div>'+(nx.length?nx.map((x,i)=>`<div class="next-item ${x.s.cls}"><span class="next-rank">${i+1}</span><div><div class="next-name">${esc(x.s.name)}</div><div class="next-why">${x.d}d to exam · ${Math.round(x.pf*100)}% done · conf ${x.conf}/10${x.ds>=4?` · ${x.ds}d since studied`:x.ds==null?' · not started':''}</div></div></div>`).join(''):'<div class="time-sub">All exams done 🎉</div>');
+  nc.innerHTML='<div class="section-title">Study next</div>'+(nx.length?nx.map((x,i)=>`<div class="next-item ${x.s.cls}"><span class="next-rank">${i+1}</span><div><div class="next-name">${esc(x.s.name)}</div><div class="next-why">${x.d}d to exam · ${Math.round(x.pf*100)}% done · conf ${x.conf}/10${x.perDay>0?` · ${x.perDay} papers/day`:''}${x.ds>=4?` · ${x.ds}d since studied`:x.ds==null?' · not started':''}</div></div></div>`).join(''):'<div class="time-sub">All exams done 🎉</div>');
   // overall
   let tot=0,done=0;SEED.forEach(s=>{tot+=s.topics.length;done+=prog(s.id).done.length;});
   const pct=tot?Math.round(done/tot*100):0;document.getElementById('ovPct').textContent=pct+'%';document.getElementById('ovBar').style.width=pct+'%';
