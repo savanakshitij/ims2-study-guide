@@ -123,7 +123,8 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 
 /* ---- state: only progress, keyed by subject id ---- */
 let state=null;const openSet=new Set();
-function fresh(){return {version:3,progress:{},updatedAt:Date.now()};}
+function fresh(){return {version:3,progress:{},updatedAt:0};}
+function isEmpty(st){const pr=(st&&st.progress)||{};return !Object.values(pr).some(p=>p&&((p.done&&p.done.length)||p.minutes||p.papersDone||p.papersTotal));}
 function prog(id){const p=state.progress[id]||(state.progress[id]={done:[],minutes:0,last:null,confidence:5,papersTotal:0,papersDone:0});if(p.confidence==null)p.confidence=5;if(p.papersTotal==null)p.papersTotal=0;if(p.papersDone==null)p.papersDone=0;return p;}
 function confLabel(c){return c<=2?'Just starting':c<=4?'Shaky':c<=6?'Getting there':c<=8?'Solid':'Exam-ready';}
 function papersAdvice(p,exam){const total=p.papersTotal||0,done=p.papersDone||0;if(total<=0)return 'Add how many papers you have.';const rem=Math.max(0,total-done);const dleft=daysUntil(exam);if(rem===0)return `All ${total} done ✓`;if(dleft<=0)return `${rem} left · exam day reached`;const perDay=Math.ceil(rem/dleft);return `${rem} left · do ${perDay}/day to finish in ${dleft} day${dleft===1?'':'s'}`;}
@@ -157,8 +158,9 @@ async function pushRemote(){if(!cloudEnabled)return;try{setStatus('syncing…','
   if(!r.ok)throw 0;setStatus('synced','var(--accent-prog)');}catch(e){setStatus('offline (saved locally)','var(--accent-mat)');}}
 async function pullRemote(){if(!cloudEnabled)return;try{const r=await fetch(SYNC_URL,{headers:{'Accept':'application/json'}});if(!r.ok)throw 0;
   const j=await r.json();const at=(j&&j.updated_at)||0;const m=j&&j.data?migrate(j.data):null;
-  if(m&&at>state.updatedAt){state=m;saveLocal();render();}
-  else if(state.updatedAt>0&&(!m)){pushRemote();}
+  const remoteHasData=m&&!isEmpty(m);
+  if(m&&(at>state.updatedAt||(isEmpty(state)&&remoteHasData))){state=m;saveLocal();render();}
+  else if(!isEmpty(state)&&!remoteHasData){pushRemote();}
   setStatus('synced','var(--accent-prog)');}catch(e){setStatus('offline (saved locally)','var(--accent-mat)');}}
 
 /* ---- helpers ---- */
